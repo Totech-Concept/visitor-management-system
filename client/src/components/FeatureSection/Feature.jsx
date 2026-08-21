@@ -49,7 +49,7 @@ const features = [
 ];
 export default function Feature() {
   return (
-    <section id='features' className='bg-slate-50'>
+    <section id='features' className='bg-slate-50 scroll-mt-15 md:scroll-mt-24 lg:scroll-mt-2'>
         <div className='mx-auto max-w-7xl px-6 py-16 md:py-24'>
             <div className='mx-auto max-w-2xl text-center'>
                 <p className='text-blue-600 font-bold text-sm tracking-wide leading-tight'>PLATFORM FEATURES</p>
@@ -66,7 +66,7 @@ export default function Feature() {
                     className='border border-slate-200 px-3 py-4 rounded-2xl bg-white p-7 shadow-sm'
                     >
                         <div className='flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50'>
-                            <IconComponent className='h-5 w-5 text-blue-600' stroke-width={2}/>
+                            <IconComponent className='h-5 w-5 text-blue-600' strokeWidth={2}/>
                         </div>
                         <h3 className='font-bold mt-5 text-lg text-slate-900'>{feature.title}</h3>
                         <p className='mt-2 leading-relaxed text-slate-500'>{feature.description}</p>

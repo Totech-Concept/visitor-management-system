@@ -31,7 +31,7 @@ const contactDetails = [
 ];
 export default function Contact() {
   return (
-    <section id='contact' className='bg-white'>
+    <section id='contact' className='bg-white scroll-mt-15 md:scroll-mt-24 lg:scroll-mt-2'>
         <div className='mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 py-16 md:py-24 lg:grid-cols-2 lg:gap-16'>
             <div>
                 <p className='text-sm text-blue-600 font-bold tracking-wide'>GET IN TOUCH</p>

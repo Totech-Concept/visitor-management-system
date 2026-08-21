@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 
 export default function FeatureCta() {
@@ -9,12 +10,14 @@ export default function FeatureCta() {
             <p className='mt-5 text-lg text-blue-100'>Book your appointment online and skip the queue at reception.</p>
         
         <div className='mt-9 flex flex-col items-center justify-center gap-5 sm:flex-row'>
-            <button className='rounded-lg bg-slate-50 px-6 py-3.5 text-sm font-semibold text-slate-900 shadow-sm hover:bg-white'>Book Appointment Now</button>
-            <a href='#courses'
+            <Link 
+            to="/appointment"
+            className='rounded-lg bg-slate-50 px-6 py-3.5 text-sm font-semibold text-slate-900 shadow-sm hover:bg-white'>Book Appointment Now</Link>
+            <Link to='/#features'
                 className='inline-flex items-center gap-1.5 text-sm font-semibold text-white underline underline-offset-4 hover:text-blue-100'
             >Learn about our courses 
                 <ArrowRight className='h-4 w-4'/>
-            </a>
+            </Link>
             </div>
         </div>
     </section>

@@ -26,7 +26,7 @@ const stats = [
 ];
 export default function About() {
   return (
-    <section id='about' className='bg-white'>
+    <section id='about' className='bg-white scroll-mt-22 md:scroll-mt-24 lg:scroll-mt-2'>
         <div className='mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 md:py-24 lg:grid-cols-2 lg:gap-16'>
             <div className='order-4 lg:order-1 overflow-hidden shadow-sm '>
                 <img 

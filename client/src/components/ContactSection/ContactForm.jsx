@@ -53,7 +53,7 @@ export default function ContactForm() {
   return (
     <div className="rounded-2xl bg-slate-50 p-6 sm:p-8">
         <h3 className="text-xl font-bold text-slate-900">Send us a message</h3>
-      <form className="mt-6 space-y-4 ">
+      <form onSubmit={handleSubmit} className="mt-6 space-y-4 ">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label 
