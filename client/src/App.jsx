@@ -3,6 +3,7 @@ import Home from "./pages/Home"
 import Header from "./components/Header";
 import Appointment from "./pages/Appointment";
 import ScrollToSection from "./components/ScrollToSection";
+import StaffLogin from "./pages/StaffLogin";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/appointment" element={<Appointment />} />
+        <Route path="/staff-login" element={<StaffLogin />} />
       </Routes>
     </>
   );

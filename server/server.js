@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require("cors");
 const visitorRoutes = require("./routes/visitorRoutes");
-const contactRoutes = require("./routes/contactRoutes")
+const contactRoutes = require("./routes/contactRoutes");
+const appointmentRoutes = require("./routes/appointmentRoutes");
 
 const app = express();
 const PORT = 3000;
@@ -12,7 +13,7 @@ app.use(express.json());
 
 app.use("/visitors", visitorRoutes);
 app.use("/contact",contactRoutes);
-
+app.use("/appointments", appointmentRoutes);
 
 
 // Define a basic route
