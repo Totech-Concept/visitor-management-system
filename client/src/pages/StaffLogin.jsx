@@ -10,10 +10,10 @@ export default function StaffLogin() {
     const navigate = useNavigate();
     const [form, setForm] = useState({ email: "", password: ""});
     const [rememberMe, setRememberMe] = useState(false);
-    const [status, setStatus] = useState({state: "idle, message: "});
+    const [status, setStatus] = useState({state: "idle", message: ""});
 
     const handleChange = (e) => {
-        const [name, value] = e.target;
+        const { name, value } = e.target;
 
         setForm((form) => ({
             ...form,
@@ -33,7 +33,7 @@ export default function StaffLogin() {
     
 
     try {
-        const response = await fetch("http://localhost:5173/login", {
+        const response = await fetch("http://localhost:3000/staff/login", {
             method: "POST",
             headers: {
                 "Content-type": "application/json"
@@ -46,9 +46,12 @@ export default function StaffLogin() {
             throw new Error(result.message || "Invalid email or password.")
         }
 
-        setStatus({ state: "success", message: "Signed in successfully."})
+        setStatus({ state: "success", message: "Signed in successfully."});
         // Persist token, then redirect to the staff dashboard.
-        // localStorage.setItem("token", result.token);
+        localStorage.setItem("token", result.token);
+
+        localStorage.setItem("staff", JSON.stringify(result.staff));
+        
         navigate("/dashboard");
     } catch(err) {
         setStatus({ state: "error", message: err.message});
@@ -58,7 +61,7 @@ export default function StaffLogin() {
     const inputClasses = 
         "w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-blue-500";
   return (
-    <div className='flex min-h-screen items-center justify-center bg-linear-to-br from-slate-500 via-blue-50/40 to-white px-6 py-12'>
+    <div className='mt-0 flex min-h-screen items-center justify-center bg-slate-100 px-6 py-12'>
         <div className='w-full max-w-md'>
             <div className='flex flex-col items-center text-center'>
                 <div className='flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 shadow-sm shadow-blue-600/30'>
@@ -118,12 +121,12 @@ export default function StaffLogin() {
                             />
                             Remember me
                         </label>
-                        <Link
+                        <span
                             to="/forgot-password"
                             className='text-sm font-medium text-blue-600 hover:text-blue-700'
                         >
                             Forgot password?
-                        </Link>
+                        </span>
                     </div>
 
                     {status.state === "error" && (
@@ -143,9 +146,10 @@ export default function StaffLogin() {
                 </div>
             </div>
 
-                    
-            <p className='mt-6 text-center text-slate-600'>Need to schedule a visit? {" "}</p>
-            <Link to="/appointment" className='font-semibold text-blue-600 hover:text-blue-700'>Book appointment</Link>
+            <div className='flex justify-between w-[80%] mx-auto'>        
+                <p className='mt-6 text-sm text-center text-slate-600'>Need to schedule a visit? {" "}</p>
+                <Link to="/appointment" className='mt-6 text-sm text-center font-semibold text-blue-600 hover:text-blue-700'>Book appointment</Link>
+            </div>
         </div> 
     </div>
   );

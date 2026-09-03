@@ -33,7 +33,7 @@ export default function Header() {
                 {/* Desktop actions */}
                 <div className='hidden items-center gap-5 lg:flex'>
                     <Link 
-                    to='/#signin'
+                    to='/staff-login'
                     className='text-sm font-medium text-slate-700 hover:text-slate-900 sm:block' 
                     >Sign In</Link>
                     <Link
@@ -76,7 +76,7 @@ export default function Header() {
                         onClick={closeMenu} 
                         className='hover:text-slate-900'>Contact</Link>
                         <Link 
-                        to='/#signin'
+                        to='/staff-login'
                         onClick={closeMenu} 
                         className='text-slate-700 hover:text-slate-900'>Sign In</Link>
                         <Link 

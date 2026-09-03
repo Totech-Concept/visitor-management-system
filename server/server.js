@@ -1,8 +1,10 @@
+require("dotenv").config();
 const express = require('express');
 const cors = require("cors");
 const visitorRoutes = require("./routes/visitorRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
+const staffRoutes = require("./routes/staffRoutes");
 
 const app = express();
 const PORT = 3000;
@@ -14,6 +16,7 @@ app.use(express.json());
 app.use("/visitors", visitorRoutes);
 app.use("/contact",contactRoutes);
 app.use("/appointments", appointmentRoutes);
+app.use("/staff", staffRoutes);
 
 
 // Define a basic route
