@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "lucide-react": "^1.30.0"
+    "lucide-react": "^1.30.0",
+    "mysql2": "^3.24.4"
   }
 }

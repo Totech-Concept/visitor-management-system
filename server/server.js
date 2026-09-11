@@ -1,4 +1,5 @@
 require("dotenv").config();
+require("./config/db");
 const express = require('express');
 const cors = require("cors");
 const visitorRoutes = require("./routes/visitorRoutes");
@@ -23,6 +24,17 @@ app.use("/staff", staffRoutes);
 app.get('/', (req, res) => {
     res.send('Server is running successfully!');
 });
+
+// 404 fallback
+app.use((req, res) => {
+    res.status(404).json({ success: false, message: "Route not found." });
+});
+
+// Central error handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ success: false, message: "Something went wrong."});
+})
 
 // Define an API endpoint that returns data
 app.get('/visitors', (req, res) => {

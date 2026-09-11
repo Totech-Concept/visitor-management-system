@@ -3,9 +3,9 @@ const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const authMiddleware = (req, res, next) => {
-    const authHeader = req.headers.authorization;
+    const authHeader = req.headers.authorization || "";
 
-    if (!authHeader) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return res.status(401).json({
             success: false,
             message: "Authentication required.",
@@ -26,7 +26,9 @@ const authMiddleware = (req, res, next) => {
         const decoded = jwt.verify(token, JWT_SECRET);
 
         req.staff = decoded;
+
         next();
+
     } catch (error) {
         return res.status(401).json({
             success: false,

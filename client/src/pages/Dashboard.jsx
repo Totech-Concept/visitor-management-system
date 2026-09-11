@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from "react-router-dom";
 import Sidebar from '../components/Sidebar';
-import { Bell, Plus, Users, CalendarDays, UserCheck, CircleX, ArrowRight, Menu } from "lucide-react";
+import AdminHeader from '../components/AdminHeader';
+import { Plus, Users, CalendarDays, UserCheck, CircleX, ArrowRight } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Sector } from "recharts";
 
 
@@ -162,36 +163,7 @@ export default function Dashboard() {
 
         <div className='flex-1 min-w-0 flex-col'>
             {/* Topbar */}
-            <header className=' sticky top-0 z-30 flex items-center justify-between border-b border-slate-100 bg-white px-4 py-4 sm:px-8'>
-                <div className='flex items-center gap-3'>
-                    <button
-                        type='button'
-                        onClick={() => setSidebarOpen(true)}
-                        aria-label='Open menu'
-                        className='flex p-2 rounded-lg text-slate-600 lg:hidden'
-                    >
-                       <Menu className='h-5 w-5' /> 
-                    </button>
-                    <h2 className='text-lg font-bold text-slate-900'>Dashboard</h2>
-                </div>
-                <div className='flex items-center gap-1.5'>
-                    <button
-                        type='button'
-                        aria-label='Notification'
-                        className='relative p-2 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600'
-                    >
-                        <Bell className='h-5 w-5' />
-                        <span className='w-1.5 h-1.5 absolute right-2 top-2 rounded-full bg-blue-600'/>
-                    </button>
-                    <Link 
-                        to="/appointment"
-                        className='inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-medium text-white shadow-sm shadow-blue-600/20 hover:bg-blue-700 sm:px-3 sm:text-sm'
-                    >
-                        <Plus className='h-4 w-4' />
-                        <span className='hidden sm:inline'>Book Visit</span>
-                    </Link>
-                </div>
-            </header>
+            <AdminHeader title="Dashboard" onMenuClick={() => setSidebarOpen(true)} />
 
             <main className='p-4 sm:p-8 space-y-6 max-w-7xl mx-auto w-full'>
                 {/* Greeting row */}
@@ -228,7 +200,7 @@ export default function Dashboard() {
                                         <Icon className='h-5 w-5 text-white' strokeWidth={2} />
                                     </span>
                                 </div>
-                                <p className='text-3xl font-bold text-slate-900 mt-2'>{value}</p>
+                                <p className='text-2xl font-semibold text-slate-900 mt-2 sm:text-xl'>{value}</p>
                                 {delta && (
                                     <p className='mt-1 text-sm font-medium text-emerald-600'>{delta}</p>
                                 )}

@@ -43,16 +43,21 @@ export default function StaffLogin() {
         const result = await response.json();
 
         if(!response.ok || !result.success) {
-            throw new Error(result.message || "Invalid email or password.")
+            throw new Error(result.message || "Invalid email or password.");
         }
 
-        setStatus({ state: "success", message: "Signed in successfully."});
         // Persist token, then redirect to the staff dashboard.
+
+        // Save JWT
         localStorage.setItem("token", result.token);
 
-        localStorage.setItem("staff", JSON.stringify(result.staff));
+        // save the logged-in staff information
+        localStorage.setItem("staff", JSON.stringify(result.user));
+
+        setStatus({ state: "success", message: "Signed in successfully."});
         
         navigate("/dashboard");
+        
     } catch(err) {
         setStatus({ state: "error", message: err.message});
     }

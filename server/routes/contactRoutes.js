@@ -1,8 +1,16 @@
 const express = require("express");
 const router = express.Router();
 
-const submitContact = require("../controllers/contactController");
+const contactController = require("../controllers/contactController");
 
-router.post("/", submitContact);
+// POST   /api/contact         -> submit the contact form
+// GET    /api/contact         -> list all submitted messages
+// GET    /api/contact/:id     -> get a single message
+// DELETE /api/contact/:id     -> delete a message
+
+router.post("/", contactController.createContact);
+router.get("/", contactController.getAllContacts);
+router.get("/:id", contactController.getContactById);
+router.delete("/:id", contactController.deleteContact);
 
 module.exports = router;
