@@ -40,7 +40,7 @@ export default function Hero() {
           < HeroButtons />
           <div className='mt-12 grid max-w-md grid-cols-3 gap-6 border-t border-slate-200 pt-8'>
           <div>
-            <p className='text-2xl font-extrabold text-slate-900'>{visitorCount}00+</p>
+            <p className='text-2xl font-extrabold text-slate-900'>{visitorCount}0+</p>
             <p className='mt-1 text-sm text-slate-500'>Monthly Visitors</p>
           </div>
 

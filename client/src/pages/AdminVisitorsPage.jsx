@@ -1,117 +1,22 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from "react-router-dom";
 import { Plus, Menu, Search, Filter, Eye } from "lucide-react";
 import Sidebar from '../components/Sidebar';
 import AdminHeader from '../components/AdminHeader';
 
-const visitors = [
-  {
-    id: "VIS-001",
-    name: "Adaeze Okonkwo",
-    initials: "AO",
-    avatarBg: "bg-cyan-500",
-    email: "adaeze@techbridge.ng",
-    phone: "+234 803 456 7890",
-    purpose: "Training Enrollment",
-    date: "2026-08-07",
-    time: "09-00 AM",
-    host: "Mr. Chukwu",
-    status: "Checked In",
-  },
-  {
-    id: "VIS-002",
-    name: "Emeka Nwosu",
-    initials: "EN",
-    avatarBg: "bg-orange-500",
-    email: "emeka@digitalsol.ng",
-    phone: "+234 807 234 5678",
-    purpose: "Partnership Meeting",
-    date: "2026-08-07",
-    time: "10-30 AM",
-    host: "Mrs. Adeola",
-    status: "Scheduled",
-  },
-  {
-    id: "VIS-003",
-    name: "Fatima Al-Hassan",
-    initials: "FA",
-    avatarBg: "bg-pink-500",
-    email: "fatima@fme.ng",
-    phone: "+234 815 678 9012",
-    purpose: "Accreditation Visit",
-    date: "2026-08-07",
-    time: "11-00 AM",
-    host: "Director Afolabi",
-    status: "Checked In",
-  },
-  {
-    id: "VIS-004",
-    name: "Chidi Ezenwachi",
-    initials: "CE",
-    avatarBg: "bg-purple-500",
-    email: "chidi@zenithtech.ng",
-    phone: "+234 801 345 6789",
-    purpose: "Course Inquiry",
-    date: "2026-08-06",
-    time: "02-00 PM",
-    host: "Ms. Adeyemi",
-    status: "Checked Out",
-  },
-  {
-    id: "VIS-005",
-    name: "Ngozi Amaechi",
-    initials: "NA",
-    avatarBg: "bg-blue-500",
-    email: "ngoz1@firstbank.ng",
-    phone: "+234 803 567 8901",
-    purpose: "Corporate Training",
-    date: "2026-08-06",
-    time: "09-30 AM",
-    host: "Mr. Chukwu",
-    status: "Checked Out",
-  },
-  {
-    id: "VIS-006",
-    name: "Tunde Afolabi",
-    initials: "TA",
-    avatarBg: "bg-blue-700",
-    email: "tunde.afolabi@lasg.gov.ng",
-    phone: "+234 816 789 0123",
-    purpose: "Official Visit",
-    date: "2026-08-05",
-    time: "10-00 AM",
-    host: "Director Afolabi",
-    status: "Cancelled",
-  },
-  {
-    id: "VIS-007",
-    name: "Blessing Eze",
-    initials: "BE",
-    avatarBg: "bg-blue-600",
-    email: "blessing.eze@gmail.com",
-    phone: "+234 809 456 7890",
-    purpose: "Training Enrollment",
-    date: "2026-08-07",
-    time: "01-00 AM",
-    host: "Ms. Adeyemi",
-    status: "Scheduled",
-  },
-  {
-    id: "VIS-008",
-    name: "Mohammed Yusuf",
-    initials: "MY",
-    avatarBg: "bg-teal-500",
-    email: "m.yusuf@dangote.com",
-    phone: "+234 802 345 6789",
-    purpose: "Corporate Training",
-    date: "2026-08-08",
-    time: "09-00 AM",
-    host: "Mr. Chukwu",
-    status: "Scheduled",
-  },
-];
 
 const filterTabs = ["All", "Scheduled", "Checked In", "Checked Out", "Cancelled"];
+
+const avatarColors = [
+  "bg-cyan-500",
+  "bg-blue-600",
+  "bg-orange-500",
+  "bg-pink-500",
+  "bg-purple-500",
+  "bg-blue-500",
+  "bg-teal-500",
+  "bg-blue-700",
+];
 
 const statusStyles= {
    "Checked In": "bg-emerald-50 text-emerald-700",
@@ -129,10 +34,192 @@ function StatusBadge({ status }) {
     );
 }
 
+function getInitials(fullName) {
+  if (!fullName) return "??";
+
+  const nameParts = fullName.trim().split(/\s+/);
+
+  if (nameParts.length === 1) {
+    return nameParts[0].slice(0, 2).toUpperCase();
+  }
+
+  return (
+    nameParts[0][0] + nameParts[nameParts.length - 1][0]
+  ).toUpperCase();
+}
+
 export default function AdminVisitorsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState("All");
   const [query, setQuery] = useState("");
+
+  const [visitors, setVisitors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [showAddVisitor, setShowAddVisitor] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const [visitorForm, setVisitorForm] = useState({
+    full_name: "",
+    email: "",
+    phone: "",
+    company: "",
+    purpose: "",
+    host: "",
+    appointment_id: "",
+    status: "Scheduled",
+    notes: "",
+  });
+  
+    const fetchVisitors = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await fetch("http://localhost:3000/visitors");
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to fetch visitors");
+        }
+
+        const visitorData = data.visitors || data;
+        // setVisitors(data.visitors || data);
+        const formattedVisitors = visitorData.map((visitor) => {
+          const fullName = visitor.full_name || "Unknown Visitor";
+
+          // const nameParts = fullName.trim().split(" ");
+
+          // const initials = nameParts.length >= 2
+          //   ? `${nameParts[0[0]]}${nameParts[nameParts.length - 1][0]}`.toUpperCase()
+          //   : fullName.substring(0, 2).toUpperCase();
+
+          const createdDate = visitor.created_at
+            ? new Date(visitor.created_at)
+            : null;
+
+          const date = createdDate
+            ? createdDate.toISOString().split('T')[0]
+            : "-";
+
+          const time = createdDate
+            ? createdDate.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+            : "-";
+
+          return {
+            id: visitor.visitor_reference,
+            databaseId: visitor.id,
+            name: fullName,
+            initials: getInitials(fullName),
+            avatarBg: avatarColors[visitor.id % avatarColors.length],
+            email: visitor.email,
+            phone: visitor.phone,
+            company: visitor.company || "Individual",
+            purpose: visitor.purpose,
+            date,
+            time,
+            host: visitor.host,
+            status: visitor.status,
+          };
+        });
+
+        setVisitors(formattedVisitors);
+      } catch (error) {
+        console.error("Error fetching visitors:", error);
+        setError(error.message || "Failed to load visitors. Please try again.")
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    useEffect(() => {
+    fetchVisitors();
+}, []);
+
+  // Form input handler
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+
+    setVisitorForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Close/reset form
+  const closeAddVisitor = () => {
+    setShowAddVisitor(false);
+    setFormError("");
+
+    setVisitorForm({
+      full_name: "",
+      email: "",
+      phone: "",
+      company: "",
+      purpose: "",
+      host: "",
+      appointment_id: "",
+      status: "Scheduled",
+      notes: "",
+    });
+  };
+
+  // Submit visitor
+  const handleAddVisitor = async(e) => {
+    e.preventDefault();
+
+    setSubmitting(true);
+    setFormError("");
+    setSuccessMessage("");
+
+    try {
+      const response = await fetch("http://localhost:3000/visitors", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...visitorForm,
+          appointment_id: visitorForm.appointment_id
+            ? Number(visitorForm.appointment_id)
+            : null,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to add visitors");
+      }
+
+      // Refresh the visitor list
+      await fetchVisitors();
+
+      // Reset the form and close the modal
+      closeAddVisitor();
+
+      // Show success message
+      setSuccessMessage("Visitor added successfully.");
+
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 3000);
+
+    } catch (error) {
+      console.error("Error adding visitor:", error);
+      setFormError(
+        error.message || "Failed to add visitor Please try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const filteredVisitors = useMemo(() => {
     return visitors.filter((visitor) => {
@@ -140,14 +227,16 @@ export default function AdminVisitorsPage() {
         activeFilter === "All" || visitor.status === activeFilter;
 
         const q = query.trim().toLowerCase();
+
         const matchesQuery = 
           !q || 
-          visitor.name.toLowerCase().includes(q) ||
-          visitor.email.toLowerCase().includes(q);
+          visitor.name?.toLowerCase().includes(q) ||
+          visitor.company?.toLowerCase().includes(q) ||
+          visitor.email?.toLowerCase().includes(q);
 
           return matchesFilter && matchesQuery;
     });
-  }, [activeFilter, query]);
+  }, [visitors, activeFilter, query]);
 
   return (
     <div className='flex min-h-screen bg-slate-50'>
@@ -201,18 +290,38 @@ export default function AdminVisitorsPage() {
 
               <button
                 type='button'
+                onClick={() => {
+                  setFormError("");
+                  setSuccessMessage("");
+                  setShowAddVisitor(true);
+                }}
                 className='inline-flex w-fit items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 hover:bg-blue-700'
               >
                 <Plus className='h-4 w-4' />
                 Add Visitor
               </button>
             </div>
+
+            {successMessage && (
+              <div className='mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emeraldn-700'>
+                {successMessage}
+              </div>
+            )}
             
             {/* Visitors list */}
             <div className='mt-6 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6'>
-              {filteredVisitors.length === 0 ? (
+              {loading ? (
                 <p className='py-10 text-center text-sm text-slate-500'>
-                  No visitors match your search or filter.</p>
+                  Loading visitors...
+                </p>
+              ) : error ? (
+                <p className='py-10 text-center text-sm text-red-500'>
+                  {error}
+                </p>
+              ) : filteredVisitors.length === 0 ? (
+                <p className='py-10 text-center text-sm text-slate-500'>
+                  No visitors match your search or filter.
+                </p>
               ) : (
                 <>
                 {/* Mobile/tablet: stacked cards */}
@@ -326,6 +435,230 @@ export default function AdminVisitorsPage() {
             </div>
           </main>
       </div>
+
+      {/* Registration modal */}
+      {showAddVisitor && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4 py-6">
+    <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-xl">
+
+      {/* Modal Header */}
+      <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+        <div>
+          <h2 className="text-lg font-bold text-slate-900">
+            Add Visitor
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Register a new visitor
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={closeAddVisitor}
+          className="rounded-lg px-3 py-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* Form */}
+      <form onSubmit={handleAddVisitor} className="p-6">
+
+        {formError && (
+          <div className="mb-5 rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
+            {formError}
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+
+          {/* Full Name */}
+          <div className="sm:col-span-2">
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+              Full Name
+            </label>
+
+            <input
+              type="text"
+              name="full_name"
+              value={visitorForm.full_name}
+              onChange={handleFormChange}
+              placeholder="Enter visitor's full name"
+              required
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+              Email
+            </label>
+
+            <input
+              type="email"
+              name="email"
+              value={visitorForm.email}
+              onChange={handleFormChange}
+              placeholder="visitor@example.com"
+              required
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+              Phone
+            </label>
+
+            <input
+              type="tel"
+              name="phone"
+              value={visitorForm.phone}
+              onChange={handleFormChange}
+              placeholder="08012345678"
+              required
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Company */}
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+              Company
+            </label>
+
+            <input
+              type="text"
+              name="company"
+              value={visitorForm.company}
+              onChange={handleFormChange}
+              placeholder="Company or Individual"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Purpose */}
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+              Purpose
+            </label>
+
+            <input
+              type="text"
+              name="purpose"
+              value={visitorForm.purpose}
+              onChange={handleFormChange}
+              placeholder="e.g. Course Inquiry"
+              required
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Host */}
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+              Host
+            </label>
+
+            <input
+              type="text"
+              name="host"
+              value={visitorForm.host}
+              onChange={handleFormChange}
+              placeholder="Staff member to visit"
+              required
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Appointment ID */}
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+              Appointment ID
+              <span className="ml-1 text-xs font-normal text-slate-400">
+                (Optional)
+              </span>
+            </label>
+
+            <input
+              type="number"
+              name="appointment_id"
+              value={visitorForm.appointment_id}
+              onChange={handleFormChange}
+              placeholder="e.g. 12"
+              min="1"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Status */}
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+              Status
+            </label>
+
+            <select
+              name="status"
+              value={visitorForm.status}
+              onChange={handleFormChange}
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            >
+              <option value="Scheduled">Scheduled</option>
+              <option value="Checked In">Checked In</option>
+              <option value="Checked Out">Checked Out</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+
+          {/* Notes */}
+          <div className="sm:col-span-2">
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+              Notes
+              <span className="ml-1 text-xs font-normal text-slate-400">
+                (Optional)
+              </span>
+            </label>
+
+            <textarea
+              name="notes"
+              value={visitorForm.notes}
+              onChange={handleFormChange}
+              rows="3"
+              placeholder="Additional information about the visitor..."
+              className="w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+        </div>
+
+        {/* Buttons */}
+        <div className="mt-6 flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
+
+          <button
+            type="button"
+            onClick={closeAddVisitor}
+            disabled={submitting}
+            className="rounded-lg border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {submitting ? "Adding Visitor..." : "Add Visitor"}
+          </button>
+
+        </div>
+
+      </form>
+    </div>
+  </div>
+)}
     </div>
   );
-}
+  };

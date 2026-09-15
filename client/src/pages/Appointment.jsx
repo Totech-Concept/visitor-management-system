@@ -17,15 +17,15 @@ const purposeOptions = [
 ];
 
 const timeOptions = [
-  "9:00 AM",
-  "10:00 AM",
-  "11:00 AM",
-  "12:00 PM",
-  "1:00 PM",
-  "2:00 PM",
-  "3:00 PM",
-  "4:00 PM",
-  "5:00 PM",
+  { label: "9:00 AM", value: "09:00:00" },
+  { label: "10:00 AM", value: "10:00:00" },
+  { label: "11:00 AM", value: "11:00:00" },
+  { label: "12:00 PM", value: "12:00:00" },
+  { label: "1:00 PM", value: "13:00:00" },
+  { label: "2:00 PM", value: "14:00:00" },
+  { label: "3:00 PM", value: "15:00:00" },
+  { label: "4:00 PM", value: "16:00:00" },
+  { label: "5:00 PM", value: "17:00:00" },
 ];
 
 const initialForm = {
@@ -86,12 +86,12 @@ export default function Appointment() {
         message: data.message || "Appointment booked successfully.",
       });
       setFormData(initialForm);
+
     } catch (error) {
       setStatus({
         state: "error",
-        message: error.message
+        message: error.message || "Unable to book appointment. Please try again."
       });
-
     }
   }
 
@@ -205,7 +205,7 @@ export default function Appointment() {
                 >
                     <option value="" disabled>Select preferred time</option>
                     {timeOptions.map((time) => (
-                      <option key={time} value={time}>{time}</option>
+                      <option key={time.value} value={time.value}>{time.label}</option>
                     ))}
                 </select>
               </div>
