@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/FooterSection/Footer';
@@ -42,6 +42,12 @@ const initialForm = {
 export default function Appointment() {
   const [status, setStatus] = useState({ state: "idle", message: "" });
   const [formData, setFormData] = useState(initialForm);
+  const [appointmentStats, setAppointmentStats] = useState({
+    today: 0,
+    upcoming: 0,
+    confirmed: 0,
+    cancelled: 0
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -94,6 +100,24 @@ export default function Appointment() {
       });
     }
   }
+
+  useEffect(() => {
+    const fetchAppointmentStats = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/appointments/stats");
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to fetch appointment statistics");
+        }
+        setAppointmentStats(data);
+      } catch (error) {
+        console.error("Appointment stats error", error);
+      };
+    }
+    fetchAppointmentStats()
+  }, [])
 
   const inputClasses = "w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500";
   

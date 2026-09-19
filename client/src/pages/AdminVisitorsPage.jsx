@@ -18,6 +18,17 @@ const avatarColors = [
   "bg-blue-700",
 ];
 
+const purposeOptions = [
+  "Prospective Student Visit",
+  "Training Enrollment",
+  "Course Inquiry",
+  "Corporate Training",
+  "Partnership Meeting",
+  "Accreditation Visit",
+  "Interview",
+  "Other"
+];
+
 const statusStyles= {
    "Checked In": "bg-emerald-50 text-emerald-700",
     Scheduled: "bg-blue-50 text-blue-700",
@@ -87,15 +98,8 @@ export default function AdminVisitorsPage() {
         }
 
         const visitorData = data.visitors || data;
-        // setVisitors(data.visitors || data);
         const formattedVisitors = visitorData.map((visitor) => {
-          const fullName = visitor.full_name || "Unknown Visitor";
-
-          // const nameParts = fullName.trim().split(" ");
-
-          // const initials = nameParts.length >= 2
-          //   ? `${nameParts[0[0]]}${nameParts[nameParts.length - 1][0]}`.toUpperCase()
-          //   : fullName.substring(0, 2).toUpperCase();
+        const fullName = visitor.full_name || "Unknown Visitor";
 
           const createdDate = visitor.created_at
             ? new Date(visitor.created_at)
@@ -329,8 +333,9 @@ export default function AdminVisitorsPage() {
                   {filteredVisitors.map((visitor) => (
                     <div
                       key={visitor.id}
-                      className='bg-white rounded-2xl border border-slate-100 p-4 shadow-sm space-y-3'
+                      className='bg-white rounded-2xl border border-slate-100 p-4 shadow-sm sm:p-5'
                     >
+                      {/* <div className='flex items-start justify-between gap-2'> */}
                       <div className='flex items-start justify-between gap-2'>
                         <div className='flex items-center gap-3'>
                           <span
@@ -339,18 +344,18 @@ export default function AdminVisitorsPage() {
                             {visitor.initials}
                           </span>
                           <div className='flex flex-col gap-2 sm:flex-row'>
-                          <div>
-                            <h3 className='font-semibold text-slate-900m leading-tight'>{visitor.name}</h3>
-                            <p className='text-xs text-slate-400 font-medium mt-0.5'>{visitor.id}</p>
+                          <div className='w-36 sm:w-35 shrink-0 min-w-0'>
+                            <h3 className='truncate font-semibold text-slate-900 leading-tight'>{visitor.name}</h3>
+                            <p className='text-xs text-slate-400 mt-0.5'>{visitor.id}</p>
                           </div>
-                          <div>
+                          <div className='shrink-0 ml-auto sm:ml-0'>
                             <StatusBadge status={visitor.status} />
                           </div>
                           </div>
 
                           <hr className='border-slate-100' />
 
-                          <div className='grid grid-cols-2 gap-3 text-xs'>
+                          <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs ml-2'>
                             <div>
                               <p className='text-[10px] uppercase font-bold text-slate-400'>Contact</p>
                               <p className='truncate text-slate-700 font-medium mt-0.5'>{visitor.email}</p>
@@ -541,20 +546,23 @@ export default function AdminVisitorsPage() {
 
           {/* Purpose */}
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
-              Purpose
-            </label>
+                <label htmlFor='purpose' className=' mb-1.5 text-sm font-semibold text-slate-700'>Purpose</label>
+                <select 
+                id='purpose'
+                name='purpose'
+                value={visitorForm.purpose}
+                onChange={handleFormChange}
+                required
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                
+                >
+                  <option value="" disabled>Select purpose of visit</option>
 
-            <input
-              type="text"
-              name="purpose"
-              value={visitorForm.purpose}
-              onChange={handleFormChange}
-              placeholder="e.g. Course Inquiry"
-              required
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
+                    {purposeOptions.map((option) => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                </select>
+              </div>
 
           {/* Host */}
           <div>

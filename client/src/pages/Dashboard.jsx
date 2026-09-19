@@ -1,131 +1,126 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import Sidebar from '../components/Sidebar';
 import AdminHeader from '../components/AdminHeader';
-import { Plus, Users, CalendarDays, UserCheck, CircleX, ArrowRight } from "lucide-react";
+import { Plus, Users, LogIn, LogOut, ArrowRight, CalendarCheck } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Sector } from "recharts";
 
 
-const stats = [
-    {label: "Total Visitors", value: 12, delta: "+12% this week", icon: Users, iconBg: "bg-blue-600"},
-    {label: "Schedule", value: 6, icon: CalendarDays, iconBg: "bg-purple-600"},
-    {label: "Checked In", value: 2, icon: UserCheck, iconBg: "bg-emerald-500"},
-    {label: "Checked Out", value: 3, icon: CircleX, iconBg: "bg-slate-400"},
-];
 
-const monthlyVisitorTrend = [
-    { month: "Jan", visitors: 45 },
-    { month: "Feb", visitors: 58 },
-    { month: "Mar", visitors: 68 },
-    { month: "Apr", visitors: 62 },
-    { month: "May", visitors: 88 },
-    { month: "Jun", visitors: 98 },
-    { month: "Jul", visitors: 82 },
-    { month: "Aug", visitors: 58 },
-    { month: "Sep", visitors: 0 },
-    { month: "Oct", visitors: 0 },
-    { month: "Nov", visitors: 0 },
-    { month: "Dec", visitors: 0 },
-];
 
-const visitPurposes = [
-    { name: "Training Enrollment", value: 38, color: "#2563eb" },
-    { name: "Corporate Training", value: 24, color: "#9333ea" },
-    { name: "Partnership Meeting", value: 18, color: "#059669" },
-    { name: "Accreditation Visit", value: 12, color: "#f59e0b" },
-    { name: "Course Inquiry", value: 8, color: "#ef4444" },
-];
+// const monthlyVisitorTrend = [
+//     { month: "Jan", visitors: 45 },
+//     { month: "Feb", visitors: 58 },
+//     { month: "Mar", visitors: 68 },
+//     { month: "Apr", visitors: 62 },
+//     { month: "May", visitors: 88 },
+//     { month: "Jun", visitors: 98 },
+//     { month: "Jul", visitors: 82 },
+//     { month: "Aug", visitors: 58 },
+//     { month: "Sep", visitors: 0 },
+//     { month: "Oct", visitors: 0 },
+//     { month: "Nov", visitors: 0 },
+//     { month: "Dec", visitors: 0 },
+// ];
 
-const recentVisitors = [
-    {
-        id: "VIS-001",
-        name: "Adaeze Okonkwo",
-        initials: "AO",
-        avatarBg: "bg-cyan-500",
-        company: "TechBridge Nigeria",
-        purpose: "Training Enrollment",
-        date: "2026-08-07",
-        time: "09:00 AM",
-        status: "Checked In",
-    },
-    {
-        id: "VIS-002",
-        name: "Emeka Nwosu",
-        initials: "EN",
-        avatarBg: "bg-orange-500",
-        company: "Digital Solutions Ltd",
-        purpose: "Partnership Meeting",
-        date: "2026-08-07",
-        time: "10:30 AM",
-        status: "Scheduled",
-    },
-    {
-        id: "VIS-003",
-        name: "Fatima Al-Hassan",
-        initials: "FA",
-        avatarBg: "bg-pink-500",
-        company: "Federal Ministry of Education",
-        purpose: "Accreditation Visit",
-        date: "2026-08-07",
-        time: "11:00 AM",
-        status: "Checked In",
-    },
-    {
-        id: "VIS-004",
-        name: "Chidi Ezenwachi",
-        initials: "CE",
-        avatarBg: "bg-purple-500",
-        company: "Zenith Tech Academy",
-        purpose: "Course Inquiry",
-        date: "2026-08-06",
-        time: "02:00 PM",
-        status: "Checked Out",
-    },
-    {
-        id: "VIS-005",
-        name: "Ngozi Amaechi",
-        initials: "NA",
-        avatarBg: "bg-blue-500",
-        company: "First Bank PLC",
-        purpose: "Corporate Training",
-        date: "2026-08-06",
-        time: "09:30 AM",
-        status: "Checked Out",
-    },
-    {
-        id: "VIS-006",
-        name: "Tunde Afolabi",
-        initials: "TA",
-        avatarBg: "bg-blue-800",
-        company: "Lagos State Government",
-        purpose: "Official Visit",
-        date: "2026-08-05",
-        time: "10:00 AM",
-        status: "Cancelled",
-    },
-    {
-        id: "VIS-007",
-        name: "Blessing Eze",
-        initials: "BE",
-        avatarBg: "bg-blue-600",
-        company: "Independent",
-        purpose: "Training Enrollment",
-        date: "2026-08-07",
-        time: "01:00 AM",
-        status: "Scheduled",
-    },
-    {
-        id: "VIS-008",
-        name: "Mohammed Yusuf",
-        initials: "MY",
-        avatarBg: "bg-teal-500",
-        company: "Dangote Group",
-        purpose: "Corporate Training",
-        date: "2026-08-08",
-        time: "09:00 AM",
-        status: "Scheduled",
-    },
-];
+// const visitPurposes = [
+//     { name: "Training Enrollment", value: 38, color: "#2563eb" },
+//     { name: "Corporate Training", value: 24, color: "#9333ea" },
+//     { name: "Partnership Meeting", value: 18, color: "#059669" },
+//     { name: "Accreditation Visit", value: 12, color: "#f59e0b" },
+//     { name: "Course Inquiry", value: 8, color: "#ef4444" },
+// ];
+
+// const recentVisitors = [
+//     {
+//         id: "VIS-001",
+//         name: "Adaeze Okonkwo",
+//         initials: "AO",
+//         avatarBg: "bg-cyan-500",
+//         company: "TechBridge Nigeria",
+//         purpose: "Training Enrollment",
+//         date: "2026-08-07",
+//         time: "09:00 AM",
+//         status: "Checked In",
+//     },
+//     {
+//         id: "VIS-002",
+//         name: "Emeka Nwosu",
+//         initials: "EN",
+//         avatarBg: "bg-orange-500",
+//         company: "Digital Solutions Ltd",
+//         purpose: "Partnership Meeting",
+//         date: "2026-08-07",
+//         time: "10:30 AM",
+//         status: "Scheduled",
+//     },
+//     {
+//         id: "VIS-003",
+//         name: "Fatima Al-Hassan",
+//         initials: "FA",
+//         avatarBg: "bg-pink-500",
+//         company: "Federal Ministry of Education",
+//         purpose: "Accreditation Visit",
+//         date: "2026-08-07",
+//         time: "11:00 AM",
+//         status: "Checked In",
+//     },
+//     {
+//         id: "VIS-004",
+//         name: "Chidi Ezenwachi",
+//         initials: "CE",
+//         avatarBg: "bg-purple-500",
+//         company: "Zenith Tech Academy",
+//         purpose: "Course Inquiry",
+//         date: "2026-08-06",
+//         time: "02:00 PM",
+//         status: "Checked Out",
+//     },
+//     {
+//         id: "VIS-005",
+//         name: "Ngozi Amaechi",
+//         initials: "NA",
+//         avatarBg: "bg-blue-500",
+//         company: "First Bank PLC",
+//         purpose: "Corporate Training",
+//         date: "2026-08-06",
+//         time: "09:30 AM",
+//         status: "Checked Out",
+//     },
+//     {
+//         id: "VIS-006",
+//         name: "Tunde Afolabi",
+//         initials: "TA",
+//         avatarBg: "bg-blue-800",
+//         company: "Lagos State Government",
+//         purpose: "Official Visit",
+//         date: "2026-08-05",
+//         time: "10:00 AM",
+//         status: "Cancelled",
+//     },
+//     {
+//         id: "VIS-007",
+//         name: "Blessing Eze",
+//         initials: "BE",
+//         avatarBg: "bg-blue-600",
+//         company: "Independent",
+//         purpose: "Training Enrollment",
+//         date: "2026-08-07",
+//         time: "01:00 AM",
+//         status: "Scheduled",
+//     },
+//     {
+//         id: "VIS-008",
+//         name: "Mohammed Yusuf",
+//         initials: "MY",
+//         avatarBg: "bg-teal-500",
+//         company: "Dangote Group",
+//         purpose: "Corporate Training",
+//         date: "2026-08-08",
+//         time: "09:00 AM",
+//         status: "Scheduled",
+//     },
+// ];
 
 const statusStyles = {
     "Checked In": "bg-emerald-50 text-emerald-700",
@@ -142,8 +137,57 @@ function StatusBadge({ status }) {
         </span>
     );
 }
+
+const formatDateTime = (dataValue) => {
+    const date = new Date(dataValue);
+
+    return {
+        date: date.toLocaleDateString("en-CA"),
+        time: date.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit"
+        })
+    };
+};
+
+
 export default function Dashboard() {
+    const [dashboardData, setDashboardData] = useState({
+    totalVisitors: 0,
+    scheduled: 0,
+    checkedIn: 0,
+    checkedOut: 0,
+    cancelled: 0,
+    todayScheduled: 0,
+    monthlyTrend: [],
+    visitPurposes: [],
+    recentVisitors: []
+});
+
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    const stats = [
+    {label: "Total Visitors", value: dashboardData.totalVisitors, icon: Users, iconBg: "bg-blue-600"},
+    {label: "Scheduled", value: dashboardData.scheduled, icon: CalendarCheck, iconBg: "bg-purple-600"},
+    {label: "Checked In", value: dashboardData.checkedIn, icon: LogIn, iconBg: "bg-emerald-600"},
+    {label: "Checked Out", value: dashboardData.checkedOut, icon: LogOut, iconBg: "bg-orange-600"},
+];
+
+    {loading && (
+    <div className="mb-4 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-700">
+        Loading dashboard data...
+    </div>
+    )}
+
+    {error && (
+    <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+        {error}
+    </div>
+    )}
+
 
     const today = new Date().toLocaleDateString("en-US", {
         weekday: "long",
@@ -151,6 +195,71 @@ export default function Dashboard() {
         month: "long",
         year: "numeric",
     });
+
+    useEffect(() => {
+        const fetchDashboardStats = async () => {
+            try {
+                setLoading(true);
+                setError("");
+
+                const token = localStorage.getItem("token");
+
+                const response = await fetch("http://localhost:3000/dashboard/stats",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+
+                const data = await response.json();
+                if(!response.ok) {
+                    throw new Error(data.message || "Failed to fetch dashboard statistics");
+                }
+
+            const avatarColors = [
+    "bg-cyan-500",
+    "bg-orange-500",
+    "bg-pink-500",
+    "bg-purple-500",
+    "bg-blue-500",
+    "bg-blue-800",
+    "bg-blue-600",
+    "bg-teal-500"
+];
+
+const formattedRecentVisitors = data.recentVisitors.map(
+    (visitor, index) => {
+        const nameParts = visitor.full_name.trim().split(/\s+/);
+
+        const initials =
+            nameParts.length >= 2
+                ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`
+                : nameParts[0].slice(0, 2);
+
+        return {
+            ...visitor,
+            initials: initials.toUpperCase(),
+            avatarBg: avatarColors[index % avatarColors.length]
+        };
+    }
+);
+
+setDashboardData({
+    ...data,
+    recentVisitors: formattedRecentVisitors
+});
+        } catch (error) {
+            console.error("Dashboard error:", error);
+            setError(
+                error.message || "Failed to load dashboard statistics"
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchDashboardStats();
+}, []);
 
   return (
     <div className='flex min-h-screen bg-slate-50'>
@@ -171,8 +280,9 @@ export default function Dashboard() {
                     <div>
                         <p className='text-xs font-semibold uppercase tracking-wide text-slate-400'>{today}</p>
                         <p className='mt-1 text-slate-600'>
-                            <span className='font-semibold text-blue-500'>0</span>{" "}
-                            visitors schedule today
+                           <span className='font-semibold text-blue-500'>
+                                {dashboardData.todayScheduled}
+                            </span>{" "} appointments scheduled today
                         </p>
                     </div>
                     <Link
@@ -220,7 +330,7 @@ export default function Dashboard() {
                         </p>
                         <div className='mt-4 h-72'>
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={monthlyVisitorTrend}>
+                                <BarChart data={dashboardData.monthlyTrend}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke='#e2e8f0'/>
                                     <XAxis
                                         dataKey="month"
@@ -251,7 +361,7 @@ export default function Dashboard() {
                             <ResponsiveContainer width="80%" height="80%">
                                 <PieChart>
                                     <Pie
-                                       data={visitPurposes} 
+                                       data={dashboardData.visitPurposes} 
                                        dataKey="value"
                                        nameKey="name"
                                        innerRadius="65%"
@@ -260,7 +370,7 @@ export default function Dashboard() {
                                        shape={(props) => (
                                         <Sector
                                             {...props}
-                                            fill={visitPurposes[props.index]?.color}
+                                            fill={dashboardData.visitPurposes[props.index]?.color}
                                             stroke='none' 
                                         />
                                        )}
@@ -270,7 +380,7 @@ export default function Dashboard() {
                         </div>
 
                         <ul className='mt-2 space-y-2'>
-                            {visitPurposes.map((purpose) => (
+                            {dashboardData.visitPurposes.map((purpose) => (
                                 <li
                                     key={purpose.name}
                                     className='flex items-center justify-between text-sm'
@@ -317,7 +427,7 @@ export default function Dashboard() {
                                 </tr>
                             </thead>
                             <tbody className='divide-y divide-slate-100 text-sm'>
-                                {recentVisitors.map((visitor) => (
+                                {dashboardData.recentVisitors.map((visitor) => (
                                     <tr
                                         key={visitor.id}
                                         className='border-b border-slate-50 last:border-0'
@@ -329,7 +439,7 @@ export default function Dashboard() {
                                                 >
                                                     {visitor.initials}</span>
                                                 <div className='leading-tight'>
-                                                    <p className='font-bold text-slate-800 leading-snug'>{visitor.name}</p>
+                                                    <p className='font-bold text-slate-800 leading-snug'>{visitor.full_name}</p>
                                                     <p className='text-xs text-slate-400 font-medium'>{visitor.id}</p>
                                                 </div>
                                             </div>
@@ -341,8 +451,15 @@ export default function Dashboard() {
                                             {visitor.purpose}
                                         </td>
                                         <td className='py-4 pr-4'>
-                                            <p className='text-slate-900'>{visitor.date}</p>
-                                            <p className='text-xs text-slate-400 font-medium'>{visitor.time}</p>
+                                            {(() => {
+                                                const formatted = formatDateTime(visitor.created_at);
+                                                return (
+                                                    <>
+                                                        <p className='text-slate-900'>{formatted.time}</p>
+                                                        <p className='text-xs text-slate-400 font-medium'>{formatted.date}</p>
+                                                    </>
+                                                );
+                                            })()}
                                         </td>
                                         <td className='py-4 pr-4'>
                                             <StatusBadge status={visitor.status} />

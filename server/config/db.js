@@ -1,6 +1,14 @@
 const mysql = require("mysql2/promise");
 require("dotenv").config();
 
+// const pool = mysql.createPool({
+//     host: 'localhost',
+//     user: 'root',
+//     password: 'your_password',
+//     database: 'your_database',
+//     dateStrings: true // Treats SQL DATE columns as raw strings ('2026-09-19') instead of JS Date objects
+// });
+
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
@@ -10,7 +18,8 @@ const pool = mysql.createPool({
 
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
+    queueLimit: 0,
+    dateStrings: true
 });
 
 module.exports = pool;

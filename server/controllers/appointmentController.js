@@ -282,9 +282,50 @@ async function deleteAppointment(req, res) {
     }
 }
 
+// Appointment statistics
+const getAppointmentStats = async (req, res) => {
+    try {
+    
+
+        const [todayRows] = await pool.query(`
+            SELECT COUNT(*) AS count FROM appointments WHERE appointment_date = CURDATE()
+            AND status = 'confirmed'
+        `);
+
+        const [upcomingRows] = await pool.query(`
+            SELECT COUNT(*) AS count FROM appointments WHERE appointment_date > CURDATE()
+            AND status = 'confirmed'
+        `);
+
+        const [confirmedRows] = await pool.query(`
+            SELECT COUNT(*) AS count FROM appointments 
+            WHERE status = 'confirmed'
+        `);
+
+        const [cancelledRows] = await pool.query(`
+            SELECT COUNT(*) AS count FROM appointments 
+            WHERE status != 'confirmed'
+        `);
+
+        res.status(200).json({
+            today: Number(todayRows[0].count) || 0,
+            upcoming: Number(upcomingRows[0].count) || 0,
+            confirmed: Number(confirmedRows[0].count) || 0,
+            cancelled: Number(cancelledRows[0].count) || 0
+        });
+    } catch (error) {
+        console.error("Error fetching appointment statistics:", error);
+
+        res.status(500).json({
+            message: "Failed to fetch appointment statistics"
+        });
+    }
+};
+
 module.exports = {
     getAllAppointments,
     getAppointmentById,
     createAppointment,
     deleteAppointment,
+    getAppointmentStats
 };

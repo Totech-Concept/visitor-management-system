@@ -1,108 +1,108 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState } from 'react';
 import { Download, TrendingUp, Users, Clock, CircleX, ArrowUp, ArrowDown, ArrowRight } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Sector } from 'recharts';
 import Sidebar from '../components/Sidebar';
 import AdminHeader from '../components/AdminHeader';
 
-const stats = [
-    {
-        label: "Total This Month",
-        value: "52",
-        delta: "+8% vs last month",
-        deltaColor: "text-emerald-600",
-        icon: TrendingUp,
-    },
-    {
-        label: "Avg Daily Visitors",
-        value: "7.4",
-        delta: "+2% vs last month",
-        deltaColor: "text-emerald-600",
-        icon: Users,
-    },
-    {
-        label: "Peak Hour",
-        value: "10-11 AM",
-        icon: Clock,
-    },
-    {
-        label: "Cancellations",
-        value: "6",
-        delta: "-3% vs last month",
-        deltaColor: "text-red-600",
-        icon: CircleX,
-    },
-];
+// const stats = [
+//     {
+//         label: "Total This Month",
+//         value: "52",
+//         delta: "+8% vs last month",
+//         deltaColor: "text-emerald-600",
+//         icon: TrendingUp,
+//     },
+//     {
+//         label: "Avg Daily Visitors",
+//         value: "7.4",
+//         delta: "+2% vs last month",
+//         deltaColor: "text-emerald-600",
+//         icon: Users,
+//     },
+//     {
+//         label: "Peak Hour",
+//         value: "10-11 AM",
+//         icon: Clock,
+//     },
+//     {
+//         label: "Cancellations",
+//         value: "6",
+//         delta: "-3% vs last month",
+//         deltaColor: "text-red-600",
+//         icon: CircleX,
+//     },
+// ];
 
-const monthlyVisits = [
-  { month: "Jan", visits: 52 },
-  { month: "Feb", visits: 62 },
-  { month: "Mar", visits: 68 },
-  { month: "Apr", visits: 64 },
-  { month: "May", visits: 90 },
-  { month: "Jun", visits: 98 },
-  { month: "Jul", visits: 82 },
-  { month: "Aug", visits: 58 },
-  { month: "Sep", visits: 0 },
-  { month: "Oct", visits: 0 },
-  { month: "Nov", visits: 0 },
-  { month: "Dec", visits: 0 },
-];
+// const monthlyVisits = [
+//   { month: "Jan", visits: 52 },
+//   { month: "Feb", visits: 62 },
+//   { month: "Mar", visits: 68 },
+//   { month: "Apr", visits: 64 },
+//   { month: "May", visits: 90 },
+//   { month: "Jun", visits: 98 },
+//   { month: "Jul", visits: 82 },
+//   { month: "Aug", visits: 58 },
+//   { month: "Sep", visits: 0 },
+//   { month: "Oct", visits: 0 },
+//   { month: "Nov", visits: 0 },
+//   { month: "Dec", visits: 0 },
+// ];
  
-const visitPurposeDistribution = [
-  { name: "Training Enrollment", value: 38, color: "#2563eb" },
-  { name: "Corporate Training", value: 24, color: "#9333ea" },
-  { name: "Partnership Meeting", value: 18, color: "#059669" },
-  { name: "Accreditation Visit", value: 12, color: "#f59e0b" },
-  { name: "Course Inquiry", value: 8, color: "#ef4444" },
-];
+// const visitPurposeDistribution = [
+//   { name: "Training Enrollment", value: 38, color: "#2563eb" },
+//   { name: "Corporate Training", value: 24, color: "#9333ea" },
+//   { name: "Partnership Meeting", value: 18, color: "#059669" },
+//   { name: "Accreditation Visit", value: 12, color: "#f59e0b" },
+//   { name: "Course Inquiry", value: 8, color: "#ef4444" },
+// ];
  
-const dailyVisitorTrend = [
-  { day: "Mon", visitors: 12 },
-  { day: "Tue", visitors: 18 },
-  { day: "Wed", visitors: 7 },
-  { day: "Thu", visitors: 13 },
-  { day: "Fri", visitors: 22 },
-  { day: "Sat", visitors: 7 },
-  { day: "Sun", visitors: 2 },
-];
+// const dailyVisitorTrend = [
+//   { day: "Mon", visitors: 12 },
+//   { day: "Tue", visitors: 18 },
+//   { day: "Wed", visitors: 7 },
+//   { day: "Thu", visitors: 13 },
+//   { day: "Fri", visitors: 22 },
+//   { day: "Sat", visitors: 7 },
+//   { day: "Sun", visitors: 2 },
+// ];
  
-const topVisitPurposes = [
-  {
-    purpose: "Training Enrollment",
-    count: 20,
-    share: 38,
-    avgDuration: "2h 15m",
-    trend: "up",
-  },
-  {
-    purpose: "Corporate Training",
-    count: 12,
-    share: 24,
-    avgDuration: "4h 30m",
-    trend: "up",
-  },
-  {
-    purpose: "Partnership Meeting",
-    count: 9,
-    share: 18,
-    avgDuration: "1h 45m",
-    trend: "flat",
-  },
-  {
-    purpose: "Accreditation Visit",
-    count: 6,
-    share: 12,
-    avgDuration: "3h 00m",
-    trend: "down",
-  },
-  {
-    purpose: "Course Inquiry",
-    count: 4,
-    share: 8,
-    avgDuration: "1h 00m",
-    trend: "down",
-  },
-];
+// const topVisitPurposes = [
+//   {
+//     purpose: "Training Enrollment",
+//     count: 20,
+//     share: 38,
+//     avgDuration: "2h 15m",
+//     trend: "up",
+//   },
+//   {
+//     purpose: "Corporate Training",
+//     count: 12,
+//     share: 24,
+//     avgDuration: "4h 30m",
+//     trend: "up",
+//   },
+//   {
+//     purpose: "Partnership Meeting",
+//     count: 9,
+//     share: 18,
+//     avgDuration: "1h 45m",
+//     trend: "flat",
+//   },
+//   {
+//     purpose: "Accreditation Visit",
+//     count: 6,
+//     share: 12,
+//     avgDuration: "3h 00m",
+//     trend: "down",
+//   },
+//   {
+//     purpose: "Course Inquiry",
+//     count: 4,
+//     share: 8,
+//     avgDuration: "1h 00m",
+//     trend: "down",
+//   },
+// ];
  
 const trendStyles = {
   up: { icon: ArrowUp, color: "text-emerald-600" },
@@ -117,6 +117,92 @@ function TrendIcon({ trend }) {
 
 export default function AdminReportPage() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    const [reportData, setReportData] = useState({
+        stats: {
+            totalThisMonth: 0,
+            avgDailyVisitors: 0,
+            peakHour: "N/A",
+            cancellations: 0,
+        },
+        monthlyVisits: [],
+        visitPurposeDistribution: [],
+        dailyVisitorTrend: [],
+        topVisitPurposes: [],
+    });
+
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    // Fetch the report data
+    useEffect(() => {
+        const fetchReportData = async () => {
+            try {
+                setLoading(true);
+                setError("");
+
+                const token = localStorage.getItem("token");
+                const response = await fetch("http://localhost:3000/reports/analytics",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                    },
+                }
+                );
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(
+                        data.message || "Failed to fetch report data"
+                    );
+                }
+                setReportData(data);
+            } catch (error) {
+                console.error("Error fetching report data:", error);
+                setError(error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchReportData();
+    }, []);
+
+    const {
+    stats,
+    monthlyVisits,
+    visitPurposeDistribution,
+    dailyVisitorTrend,
+    topVisitPurposes,
+} = reportData;
+
+    if (loading) {
+    return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <p className="text-gray-500">
+                Loading report...
+            </p>
+        </div>
+    );
+}
+
+    if (error) {
+    return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="text-center">
+                <p className="text-red-600 font-medium">
+                    {error}
+                </p>
+
+                <button
+                    onClick={() => window.location.reload()}
+                    className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg"
+                >
+                    Try Again
+                </button>
+            </div>
+        </div>
+    );
+}
   return (
     <div className='flex min-h-screen bg-slate-50'>
         <Sidebar 
@@ -132,7 +218,11 @@ export default function AdminReportPage() {
                 {/* Header row */}
                 <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
                     <p className='text-slate-600 text-sm'>
-                        Analytics overview for <span className='font-semibold text-slate-900'>August 2026</span>
+                        Analytics overview for{" "}
+                        {new Date().toLocaleDateString("en-US", {
+                            month: "long",
+                            year: "numeric",
+                        })}
                     </p>
                     <button
                         type='button'
@@ -144,22 +234,56 @@ export default function AdminReportPage() {
                 </div>
 
                 {/* Stat cards */}
-                <div className='mt-6 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4'>
-                    {stats.map(({ label, value, delta, deltaColor, icon: Icon }) => (
-                        <div 
-                        key={label}
-                        className='rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:p-5'
-                        >
-                            <div className='flex items-start justify-between'>
-                                <p className='text-xs text-slate-500 font-medium'>{label}</p>
-                                <Icon className='h-4 w-4 shrink-0 text-slate-300' strokeWidth={2} />
+                <div className='mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4'>
+                    <div className='rounded-xl border border-gray-200 bg-white p-5 shadow-sm sm:p-5'>
+                        <div className='flex items-center justify-between'>
+                            <div>
+                                <p className='text-sm text-gray-500'>Total This Month</p>
+                                <h3 className='text-xl font-semibold text-slate-900 mt-1'>{stats.totalThisMonth ?? 0}</h3>
                             </div>
-                            <p className='mt-3 text-2xl font-semibold text-slate-900 sm:text-xl'>{value}</p>
-                            {delta && (
-                                <p className={`mt-1 text-xs font-medium sm:text-sm ${deltaColor}`}>{delta}</p>
-                            )}
+
+                            <div className='p-3 rounded-lg bg-blue-50'>
+                                <TrendingUp className='w-5 h-5 text-blue-600' />
+                            </div>
                         </div>
-                    ))}
+                    </div>
+
+                    <div className='bg-white rounded-xl border border-slate-200 p-5'>
+                        <div className='flex items-center justify-between'>
+                            <div>
+                                <p className='text-sm text-slate-500'>Avg Daily Visitors</p>
+                                <h3 className='text-xl font-semibold text-slate-900 mt-1'>{stats.avgDailyVisitors ?? 0}</h3>
+                            </div>
+
+                            <div className='p-3 rounded-lg bg-blue-50'>
+                                <Users className='w-5 h-5 text-blue-600' />
+                            </div>
+                        </div>
+                    </div>
+                    <div className='bg-white rounded-xl border border-slate-200 p-5'>
+                        <div className='flex items-center justify-between'>
+                            <div>
+                                <p className='text-sm text-slate-500'>Peak Hour</p>
+                                <h3 className='text-xl font-semibold text-slate-900 mt-1'>{stats.peakHour || "N/A"}</h3>
+                            </div>
+
+                            <div className='p-3 rounded-lg bg-blue-50'>
+                                <Clock className='w-5 h-5 text-blue-600' />
+                            </div>
+                        </div>
+                    </div>
+                    <div className='bg-white rounded-xl border border-slate-200 p-5'>
+                        <div className='flex items-center justify-between'>
+                            <div>
+                                <p className='text-sm text-slate-500'>Cancellations</p>
+                                <h3 className='text-xl font-semibold text-slate-900 mt-1'>{stats.cancellations ?? 0}</h3>
+                            </div>
+
+                            <div className='p-3 rounded-lg bg-blue-50'>
+                                <CircleX className='w-5 h-5 text-blue-600' />
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Monthly visits + purpose distribution */}

@@ -6,6 +6,8 @@ const visitorRoutes = require("./routes/visitorRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
 const staffRoutes = require("./routes/staffRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
+const reportRoutes = require("./routes/reportRoutes");
 
 const app = express();
 const PORT = 3000;
@@ -18,6 +20,8 @@ app.use("/visitors", visitorRoutes);
 app.use("/contact",contactRoutes);
 app.use("/appointments", appointmentRoutes);
 app.use("/staff", staffRoutes);
+app.use("/dashboard", dashboardRoutes);
+app.use("/reports", reportRoutes);
 
 
 // Define a basic route
