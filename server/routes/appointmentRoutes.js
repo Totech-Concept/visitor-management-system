@@ -11,6 +11,9 @@ const appointmentController = require("../controllers/appointmentController");
 router.post("/", appointmentController.createAppointment);
 router.get("/", appointmentController.getAllAppointments);
 router.get("/stats", appointmentController.getAppointmentStats);
+
+router.patch("/:id/status", appointmentController.updateAppointmentStatus);
+
 router.get("/:id", appointmentController.getAppointmentById);
 router.delete("/:id", appointmentController.deleteAppointment);
 

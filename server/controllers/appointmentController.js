@@ -322,10 +322,107 @@ const getAppointmentStats = async (req, res) => {
     }
 };
 
+const updateAppointmentStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        // Only cancellation is allowed through this endpoint for now
+        // if (status !== "cancelled") {
+        //     return res.status(400).json({
+        //         message: "Invalid appointment status."
+        //     });
+        // }
+
+        
+        // Validate allowed status options
+        const allowedStatuses = ["confirmed", "cancelled", "checked_in", "check_out"];
+        if (!allowedStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid appointment status."
+            });
+        }
+        
+        // Fetch the appointment
+        const [appointmentRows] = await pool.query(
+            `SELECT id, appointment_date, appointment_time, status FROM appointments WHERE id = ?`, [id]
+        );
+
+        if (appointmentRows.length === 0) {
+            return res.status(404).json({
+                message: "Appointment not found."
+            });
+        }
+
+        const appointment = appointmentRows[0];
+
+        // Handle Cancellation Specific Checks
+        if (status === "cancelled") {
+            if (appointment.status === 'cancelled') {
+            return res.status(400).json({
+                message: "This appointment has already been cancelled."
+            });
+        }
+
+        // Only confirmed appointments can be cancelled
+        if (appointment.status !== "confirmed") {
+            return res.status(400).json({
+                message: "Only confirmed appointments can be cancelled."
+            });
+        }
+
+        // Do not allow cancellation of a past-date appointment
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const appointmentDate = new Date(appointment.appointment_date);
+        appointmentDate.setHours(0, 0, 0, 0);
+
+        if (appointmentDate < today) {
+            return res.status(400).json({
+                message: "A past appointment cannot be cancelled."
+            });
+        }
+
+        // Check if a visitor has checked in or out
+        const [visitorRows] = await pool.query(
+            "SELECT id, status FROM visitors WHERE appointment_id = ? LIMIT 1", [id]
+        );
+
+        if (visitorRows.length > 0) {
+            const visitorStatus = visitorRows[0].status?.toLowerCase();
+
+            if (visitorStatus === "checked in" || visitorStatus === "checked_in" || visitorStatus === "checked out" || visitorStatus === "checked_out") {
+                return res.status(400).json({
+                    message: `This appointment cannot be cancelled because the visitor is already ${visitorRows[0].status}.`
+                });
+            }
+        }
+    }
+
+        // Cancel appointment
+        await pool.query(
+            `UPDATE appointments SET status = 'cancelled' WHERE id = ?`, [id]
+        );
+
+        return res.status(200).json({
+            message: "Appointment cancelled successfully."
+        });
+    } catch (error) {
+        console.error("Error updating appointment status:", error);
+
+        res.status(500).json({
+            message: "Failed to update appointment status."
+        });
+    }
+};
+
 module.exports = {
     getAllAppointments,
     getAppointmentById,
     createAppointment,
     deleteAppointment,
-    getAppointmentStats
+    getAppointmentStats,
+    updateAppointmentStatus
 };

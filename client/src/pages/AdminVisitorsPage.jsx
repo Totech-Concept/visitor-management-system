@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from "react-router-dom";
-import { Plus, Menu, Search, Filter, Eye } from "lucide-react";
+import { Plus, Search, Filter, LogIn, LogOut, XCircle } from "lucide-react";
 import Sidebar from '../components/Sidebar';
 import AdminHeader from '../components/AdminHeader';
 
@@ -59,6 +59,27 @@ function getInitials(fullName) {
   ).toUpperCase();
 }
 
+function getCleanLocalDateString(rawDate) {
+  if (!rawDate) return "";
+  if (typeof rawDate === "string") return rawDate.slice(0, 10);
+  const d = new Date(rawDate);
+  if (isNaN(d.getTime())) return String(rawDate).slice(0, 10);
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
+}
+
+// Helper: Check if rawDate string (YYYY-MM-DD) is today or in the future
+function isTodayOrFuture(rawDate) {
+  if (!rawDate || rawDate === "-" || rawDate.length < 10) return false;
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const [y, m, d] = rawDate.split("-");
+  const apptDate = new Date(Number(y), Number(m) - 1, Number(d));
+
+  return apptDate >= today;
+}
+
 export default function AdminVisitorsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState("All");
@@ -106,7 +127,7 @@ export default function AdminVisitorsPage() {
             : null;
 
           const date = createdDate
-            ? createdDate.toISOString().split('T')[0]
+            ? getCleanLocalDateString(createdDate)
             : "-";
 
           const time = createdDate
@@ -128,6 +149,7 @@ export default function AdminVisitorsPage() {
             purpose: visitor.purpose,
             date,
             time,
+            rawDate: date,
             host: visitor.host,
             status: visitor.status,
           };
@@ -145,6 +167,86 @@ export default function AdminVisitorsPage() {
     useEffect(() => {
     fetchVisitors();
 }, []);
+
+  // Handler: Check-In Visitor
+  const handleCheckIn = async (databaseId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:3000/visitors/${databaseId}/check-in`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}`},
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to check in visitor");
+
+      setVisitors((prev) =>
+        prev.map((item) =>
+          item.databaseId === databaseId ? { ...item, status: "Checked In" } : item
+        )
+      );
+    } catch (error) {
+      console.error("Check In visitor failed", error.message);
+    }
+  }
+
+  // Handler: Check-Out Visitor
+  const handleCheckOut = async (databaseId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:3000/visitors/${databaseId}/check-out`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to check out visitor");
+
+      setVisitors((prev) =>
+        prev.map((item) => 
+          item.databaseId === databaseId ? { ...item, status: "Checked Out" } : item
+        )
+      );
+    } catch (error) {
+      console.error("Check Out visitor failed", error.message)
+    }
+  };
+
+  // Handler: Cancel Visitor
+  const handleCancelVisitor = async (databaseId) => {
+    if (!window.confirm("Are you sure you want to cancel this visitor's schedule?")) return;
+    
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:3000/visitors/${databaseId}/status`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to cancel visitor schedule");
+
+      setVisitors((prev) =>
+        prev.map((item) => 
+          item.databaseId === databaseId ? { ...item, status: "Cancelled" } : item
+        )
+      );
+    } catch (error) {
+      console.error("Check Out visitor failed", error.message)
+    }
+  };
+
+  // Action Condition Guards
+    const canCheckIn = (visitor) => {
+      return visitor.status === "Scheduled" && isTodayOrFuture(visitor.rawDate);
+      };
+
+    const canCheckOut = (visitor) => {
+      return visitor.status === "Checked In" && isTodayOrFuture(visitor.rawDate);
+      };
+    const canCancel = (visitor) => {
+      if (visitor.status === "Checked In" || visitor.status === "Checked Out" || visitor.status === "Cancelled") {
+        return false;
+      }
+      return isTodayOrFuture(visitor.rawDate);
+      };
 
   // Form input handler
   const handleFormChange = (e) => {
@@ -312,7 +414,7 @@ export default function AdminVisitorsPage() {
               </div>
             )}
             
-            {/* Visitors list */}
+            {/* Visitors list container */}
             <div className='mt-6 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6'>
               {loading ? (
                 <p className='py-10 text-center text-sm text-slate-500'>
@@ -330,30 +432,30 @@ export default function AdminVisitorsPage() {
                 <>
                 {/* Mobile/tablet: stacked cards */}
                 <div className='space-y-3 lg:hidden'>
-                  {filteredVisitors.map((visitor) => (
-                    <div
-                      key={visitor.id}
-                      className='bg-white rounded-2xl border border-slate-100 p-4 shadow-sm sm:p-5'
-                    >
-                      {/* <div className='flex items-start justify-between gap-2'> */}
+                  {filteredVisitors.map((visitor) => {
+                    const showCheckIn = canCheckIn(visitor);
+                    const showCheckOut = canCheckOut(visitor);
+                    const showCancel = canCancel(visitor);
+                    const hasActions = showCheckIn || showCheckOut || showCancel;
+
+                    return (
+                    <div key={visitor.id} className='bg-white rounded-2xl border border-slate-100 p-4 shadow-sm sm:p-5'>
                       <div className='flex items-start justify-between gap-2'>
-                        <div className='flex items-center gap-3'>
+                        <div className='flex items-center gap-3 min-w-0'>
                           <span
                           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white ${visitor.avatarBg}`}
                           >
                             {visitor.initials}
                           </span>
-                          <div className='flex flex-col gap-2 sm:flex-row'>
-                          <div className='w-36 sm:w-35 shrink-0 min-w-0'>
+                          <div className='min-w-0'>
                             <h3 className='truncate font-semibold text-slate-900 leading-tight'>{visitor.name}</h3>
                             <p className='text-xs text-slate-400 mt-0.5'>{visitor.id}</p>
                           </div>
-                          <div className='shrink-0 ml-auto sm:ml-0'>
+                          </div>
                             <StatusBadge status={visitor.status} />
                           </div>
-                          </div>
 
-                          <hr className='border-slate-100' />
+                          <hr className='my-3 border-slate-100' />
 
                           <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs ml-2'>
                             <div>
@@ -374,12 +476,44 @@ export default function AdminVisitorsPage() {
                               <p className='text-slate-700'>{visitor.date} . {visitor.time}</p>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                    </div>
 
-                  ))}
-                </div>
+                          {/* Receptionist Action Buttons (Mobile) */}
+                          <div className='mt-4 flex items-center justify-end gap-2 border-t border-slate-100 pt-3'>
+                            {!hasActions && (
+                              <span className='text-xs text-slate-400 italic'>No actions available</span>
+                            )}
+                            {showCheckIn && (
+                              <button
+                                type='button'
+                                onClick={() => handleCheckIn(visitor.databaseId)}
+                                className='inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 transition' 
+                              >
+                                <LogIn className='h-3.5 w-3.5' /> Check In
+                              </button>
+                            )}
+                            {showCheckOut && (
+                              <button
+                                type='button'
+                                onClick={() => handleCheckOut(visitor.databaseId)}
+                                className='inline-flex items-center gap-1 rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-900 transition' 
+                              >
+                                <LogOut className='h-3.5 w-3.5' /> Check Out
+                              </button>
+                            )}
+                            {showCancel && (
+                              <button
+                                type='button'
+                                onClick={() => handleCancelVisitor(visitor.databaseId)}
+                                className='inline-flex items-center gap-1 rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-900 transition' 
+                              >
+                                <XCircle className='h-3.5 w-3.5' /> Cancel
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        );
+                    })}
+                      </div>
 
                 {/* Desktop:full table */}
                 <div className='hidden overflow-x-auto lg:block'>
@@ -392,13 +526,19 @@ export default function AdminVisitorsPage() {
                         <th className='py-3 pr-4'>Appointment</th>
                         <th className='py-3 pr-4'>Host</th>
                         <th className='py-3 pr-4'>Status</th>
+                        <th className='py-3 text-right pr-2'>Actions</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      {filteredVisitors.map((visitor) => (
+                    <tbody className='divide-y divide-slate-50'>
+                      {filteredVisitors.map((visitor) => {
+                        const showCheckIn = canCheckIn(visitor);
+                        const showCheckOut = canCheckOut(visitor);
+                        const showCancel = canCancel(visitor);
+                        const hasActions = showCheckIn || showCheckOut || showCancel;
+                        return (
                         <tr
                           key={visitor.id}
-                          className='border-b border-slate-50 last:border-0' 
+                          className='border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition' 
                         >
                           <td className='py-4 pr-4'>
                             <div className='flex items-center gap-3'>
@@ -430,8 +570,43 @@ export default function AdminVisitorsPage() {
                           <td className='py-4 pr-4'>
                             <StatusBadge status={visitor.status} />
                           </td>
+                          <td className='py-4 text-right pr-2'>
+                            <div className='flex items-center justify-end gap-2'>
+                              {!hasActions && (
+                              <span className='text-xs text-slate-400 italic'>No actions available</span>
+                            )}
+                            {showCheckIn && (
+                              <button
+                                type='button'
+                                onClick={() => handleCheckIn(visitor.databaseId)}
+                                className='inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 transition' 
+                              >
+                                <LogIn className='h-3.5 w-3.5' /> Check In
+                              </button>
+                            )}
+                            {showCheckOut && (
+                              <button
+                                type='button'
+                                onClick={() => handleCheckOut(visitor.databaseId)}
+                                className='inline-flex items-center gap-1 rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-900 transition' 
+                              >
+                                <LogOut className='h-3.5 w-3.5' /> Check Out
+                              </button>
+                            )}
+                            {showCancel && (
+                              <button
+                                type='button'
+                                onClick={() => handleCancelVisitor(visitor.databaseId)}
+                                className='inline-flex items-center gap-1 rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-900 transition' 
+                              >
+                                <XCircle className='h-3.5 w-3.5' /> Check Out
+                              </button>
+                            )}
+                            </div>
+                          </td>
                         </tr>
-                      ))}
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -443,18 +618,18 @@ export default function AdminVisitorsPage() {
 
       {/* Registration modal */}
       {showAddVisitor && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4 py-6">
-    <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4 py-6">
+          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-xl">
 
-      {/* Modal Header */}
-      <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-        <div>
-          <h2 className="text-lg font-bold text-slate-900">
-            Add Visitor
-          </h2>
-          <p className="mt-1 text-sm text-slate-500">
-            Register a new visitor
-          </p>
+          {/* Modal Header */}
+          <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+          <div>
+            <h2 className="text-lg font-bold text-slate-900">
+              Add Visitor
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Register a new visitor
+            </p>
         </div>
 
         <button
@@ -660,13 +835,12 @@ export default function AdminVisitorsPage() {
           >
             {submitting ? "Adding Visitor..." : "Add Visitor"}
           </button>
-
         </div>
-
       </form>
     </div>
   </div>
 )}
     </div>
   );
-  };
+}
+

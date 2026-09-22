@@ -63,7 +63,6 @@ function getCleanLocalDateString(rawDate) {
         return rawDate.slice(0, 10);
     }
 
-
     const d = new Date(rawDate);
     if (isNaN(d.getTime())) return String(rawDate).slice(0, 10);
 
@@ -96,6 +95,39 @@ function getTodayDate() {
     return `${year}-${month}-${day}`;
 }
 
+function canCancelAppointment(appointment) {
+    // Appointment status must be confirmed
+    if (!appointment || (appointment.status || "").toLowerCase() !== "confirmed") {
+        return false;
+    }
+
+    // Cannot cancel if visitor is already checked in or checked out
+    const visitorStatus = (appointment.visitor_status || appointment.visitorStatus || "").toLowerCase();
+    if (
+        visitorStatus === "checked in" ||
+        visitorStatus === "checked_in" ||
+        visitorStatus === "checked out" ||
+        visitorStatus === "checked_out" 
+    ) {
+        return false;
+    }
+
+    
+    const cleanDate = getCleanLocalDateString(appointment.appointment_date);
+    if (!cleanDate || cleanDate.length < 10) return false;
+
+    // Cannot cancel past-date appointments
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+
+    const [year, month, day] = cleanDate.split("-");
+    const apptDate = new Date(year, month - 1, day);
+    apptDate.setHours(0, 0, 0, 0);
+
+    return apptDate >= today;
+}
+
 export default function AdminAppointmentPage() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [activeTab, setActiveTab] = useState("approved");
@@ -124,6 +156,7 @@ export default function AdminAppointmentPage() {
                 ]);
 
                 const appointmentsData = await appointmentsResponse.json();
+                // console.log("Raw API Response:", appointmentsData);
                 const statsData = await statsResponse.json();
 
                 if (!appointmentsResponse.ok) {
@@ -144,6 +177,19 @@ export default function AdminAppointmentPage() {
                     : appointmentsData.data || appointmentsData.appointments || []
                 );
                 setAppointmentStats(statsData);
+
+                // Ensure you extract data correctly from { success: true, data: [...] }
+                const rawList = Array.isArray(appointmentsData)
+                    ? appointmentsData
+                    : appointmentsData.data || appointmentsData.appointments || [];
+
+                // Fallback for appointment_date if backend returns `date`
+                const normalizedList = rawList.map((item) => ({
+                    ...item,
+                    appointment_date: item.appointment_date || item.date || item.created_at,
+                }));
+
+                setAppointments(normalizedList);
 
             } catch (error) {
                 console.error("Appointment page error:", error);
@@ -204,129 +250,191 @@ export default function AdminAppointmentPage() {
         });
     }, [processedAppointments, activeTab]);
 
+    const handleCancelAppointment = async (appointment) => {
+        const confirmed = window.confirm(
+            "Are you sure you want to cancel this appointment?"
+        );
+
+        if (!confirmed) return;
+
+        try {
+            const token = localStorage.getItem("token");
+
+            const response = await fetch(`http://localhost:3000/appointments/${appointmentId}/status`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        status: "cancelled",
+                    }),
+                }
+            );
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(
+                    data.message || "Failed to cancel appointment"
+                );
+            }
+
+            // Update the appointment state locally
+            setAppointments((currentAppointments) => 
+                currentAppointments.map((appointment) => 
+                    appointment.id === appointmentId
+                        ? {
+                            ...appointment,
+                            status: "cancelled",
+                        }
+                        : appointment
+                )
+            );
+
+            // Dynamically update local stats counts
+            setAppointmentStats((prev) => ({
+                ...prev,
+                confirmed: Math.max(0, prev.confirmed - 1),
+                cancelled: prev.cancelled + 1,
+            }));
+
+        } catch (error) {
+            console.error("Cancel appointment error", error);
+            alert(error.message);
+        }
+    };
+
   return (
     <div className='flex min-h-screen bg-slate-50'>
-                <Sidebar 
-                    active="appointments"
-                    open={sidebarOpen}
-                    onClose={() => setSidebarOpen(false)}
-                />
-        
-        
-                <div className='flex-1 min-w-0 flex-col'>
-                    {/* Topbar */}
-                    <AdminHeader title="Appointments" onMenuClick={() => setSidebarOpen(true)} />
+        <Sidebar 
+            active="appointments"
+            open={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+        />
 
-                    <main className='px-4 py-8 sm:px-8'>
-                    {/* Tabs + list/calender toggle */}
-                    <div className='flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between'>
-                        <div className='flex gap-2 overflow-x-auto rounded-xl bg-slate-100 p-1.5'>
-                            {tabs.map(({ key, label }) => (
-                                <button
-                                    key={key}
-                                    type='button'
-                                    onClick={() => setActiveTab(key)}
-                                    className={`flex shrink-0 items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold ${
-                                            activeTab === key
-                                            ? "bg-white text-slate-900 shadow-sm"
-                                            : "text-slate-500 hover:text-slate-800"
-                                        }`}
-                                >
-                                    {label}
+
+        <div className='flex-1 min-w-0 flex-col'>
+            {/* Topbar */}
+            <AdminHeader title="Appointments" onMenuClick={() => setSidebarOpen(true)} />
+
+            <main className='px-4 py-8 sm:px-8'>
+            {/* Tabs + list/calender toggle */}
+            <div className='flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between'>
+                <div className='flex gap-2 overflow-x-auto rounded-xl bg-slate-100 p-1.5'>
+                    {tabs.map(({ key, label }) => (
+                        <button
+                            key={key}
+                            type='button'
+                            onClick={() => setActiveTab(key)}
+                            className={`flex shrink-0 items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold ${
+                                    activeTab === key
+                                    ? "bg-white text-slate-900 shadow-sm"
+                                    : "text-slate-500 hover:text-slate-800"
+                                }`}
+                        >
+                            {label}
+                            <span
+                                className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs font-bold ${
+                                        activeTab === key
+                                        ? "bg-blue-600 text-white"
+                                        : "bg-slate-200 text-slate-500"
+                                    }`}
+                            >
+                                {tabCounts[key]}
+                            </span>
+                        </button>
+                    ))}
+                </div>
+
+                <div className='flex shrink-0 gap-2'>
+                    <button
+                        type='button'
+                        onClick={() => setView("list")}
+                        className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-semibold ${
+                                view === "list"
+                                ? "bg-blue-600 text-white shadow-sm shadow-blue-600/20"
+                                : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                            }`}
+                    >
+                        <List className='h-4 w-4' />
+                        List
+                    </button>
+                    <button
+                        type='button'
+                        onClick={() => setView("calendar")}
+                        className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-semibold ${
+                                view === "calendar"
+                                ? "bg-blue-600 text-white shadow-sm shadow-blue-600/20"
+                                : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                            }`}
+                    >
+                        <CalendarRange className='h-4 w-4' />
+                        Calender
+                    </button>
+                </div>
+            </div>
+
+            {/* Appointments list */}
+            <div className='mt-6 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6'>
+            {loading ? (
+                <div className='py-10 text-center text-sm text-slate-500'>
+                    Loading appointments...
+                </div>
+            ) : error ? (
+                <div className='py-10 text-center'>
+                    <p className='text-sm font-medium text-red-600'>
+                        {error}
+                    </p>
+                </div>
+            ) : view === "calendar" ? (
+                    <div className='flex flex-col items-center justify-center gap-2 py-16 text-center'>
+                        <CalendarRange className='h-8 w-8 text-slate-300' />
+                        <p className='font-semibold text-slate-700'>Calendar view coming soon</p>
+                        <p className='text-sm text-slate-500'>Switch back to List to see appointments for now.</p>
+                    </div>
+                ) : visibleAppointments.length === 0 ? (
+                    <p className='py-10 text-center text-sm text-slate-500'>No appointments in this category.</p>
+                ) : (
+                    <div className='divide-y divide-slate-50'>
+                        {visibleAppointments.map((appt) => (
+                            <div
+                            key={appt.id}
+                            className='flex flex-col gap-3 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between'
+                            >
+                                <div className='flex min-w-0 items-center gap-3'>
                                     <span
-                                        className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs font-bold ${
-                                                activeTab === key
-                                                ? "bg-blue-600 text-white"
-                                                : "bg-slate-200 text-slate-500"
-                                            }`}
+                                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white ${appt.avatarBg}`}
                                     >
-                                        {tabCounts[key]}
+                                        {appt.initials}
                                     </span>
-                                </button>
-                            ))}
-                        </div>
-
-                        <div className='flex shrink-0 gap-2'>
-                            <button
-                                type='button'
-                                onClick={() => setView("list")}
-                                className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-semibold ${
-                                        view === "list"
-                                        ? "bg-blue-600 text-white shadow-sm shadow-blue-600/20"
-                                        : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                                    }`}
-                            >
-                                <List className='h-4 w-4' />
-                                List
-                            </button>
-                            <button
-                                type='button'
-                                onClick={() => setView("calendar")}
-                                className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-semibold ${
-                                        view === "calendar"
-                                        ? "bg-blue-600 text-white shadow-sm shadow-blue-600/20"
-                                        : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                                    }`}
-                            >
-                                <CalendarRange className='h-4 w-4' />
-                                Calender
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Appointments list */}
-                    <div className='mt-6 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6'>
-                    {loading ? (
-                        <div className='py-10 text-center text-sm text-slate-500'>
-                            Loading appointments...
-                        </div>
-                    ) : error ? (
-                        <div className='py-10 text-center'>
-                            <p className='text-sm font-medium text-red-600'>
-                                {error}
-                            </p>
-                        </div>
-                    ) : view === "calendar" ? (
-                            <div className='flex flex-col items-center justify-center gap-2 py-16 text-center'>
-                                <CalendarRange className='h-8 w-8 text-slate-300' />
-                                <p className='font-semibold text-slate-700'>Calendar view coming soon</p>
-                                <p className='text-sm text-slate-500'>Switch back to List to see appointments for now.</p>
-                            </div>
-                        ) : visibleAppointments.length === 0 ? (
-                            <p className='py-10 text-center text-sm text-slate-500'>No appointments in this category.</p>
-                        ) : (
-                            <div className='divide-y divide-slate-50'>
-                                {visibleAppointments.map((appt) => (
-                                    <div
-                                    key={appt.id}
-                                    className='flex flex-col gap-3 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between'
-                                    >
-                                        <div className='flex min-w-0 items-center gap-3'>
-                                            <span
-                                            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white ${appt.avatarBg}`}
-                                            >
-                                                {appt.initials}
-                                            </span>
-                                            <div className='min-w-0 leading-tight'>
-                                                <p className='truncate font-semibold text-slate-900'>{appt.full_name}</p>
-                                                <p className='truncate text-sm text-slate-500'>{appt.company} . {appt.purpose}</p>
-                                            </div>
-                                        </div>
-
-                                        <div className='flex items-center justify-between gap-4 sm:justify-end sm:gap-6'>
-                                            <div className='text-left sm:text-right'>
-                                                <p className='text-sm sm:text-right text-slate-900'>{appt.displayDate}</p>
-                                                <p className='text-xs text-slate-400'>{appt.displayTime}</p>
-                                            </div>
-                                            <StatusBadge status={appt.displayStatus} />
-                                        </div>
+                                    <div className='min-w-0 leading-tight'>
+                                        <p className='truncate font-semibold text-slate-900'>{appt.full_name}</p>
+                                        <p className='truncate text-sm text-slate-500'>{appt.company} . {appt.purpose}</p>
                                     </div>
-                                ))}
+                                </div>
+
+                                <div className='flex items-center justify-between gap-4 sm:justify-end sm:gap-6'>
+                                    <div className='text-left sm:text-right'>
+                                        <p className='text-sm sm:text-right text-slate-900'>{appt.displayDate}</p>
+                                        <p className='text-xs text-slate-400'>{appt.displayTime}</p>
+                                    </div>
+                                    <StatusBadge status={appt.displayStatus} />
+
+                                    {canCancelAppointment(appt) && (
+                                        <button
+                                            type='button'
+                                            onClick={() => handleCancelAppointment(appt.id)}
+                                            className='rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50'
+                                            >Cancel</button>
+                                    )}
+                                </div>
                             </div>
-                        )}
+                        ))}
                     </div>
-                    </main>
-                 </div>       
+                )}
+            </div>
+            </main>
+        </div>       
     </div>
   );
 }
