@@ -23,7 +23,7 @@ const getDashboardStats = async (req, res) => {
         const [monthlyRows] = await pool.query(`
             SELECT MONTH(created_at) AS month_number,
                 COUNT(*) AS visitors
-            FROM visitors WHERE YEAR(created_at = YEAR(CURDATE()))
+            FROM visitors WHERE YEAR(created_at) = YEAR(CURDATE())
             GROUP BY MONTH(created_at) ORDER BY month_number
         `);
 

@@ -145,10 +145,10 @@ export default function StaffLogin() {
                     >{status.state === "loading" ? "Signing in..." : "Sign In"}</button>
                 </form>
 
-                <div className='mt-6 rounded-xl bg-slate-50 px-4 py-3 text-center'>
+                {/* <div className='mt-6 rounded-xl bg-slate-50 px-4 py-3 text-center'>
                     <p className='text-sm font-semibold text-slate-700'>Demo credentials</p>
                     <p className='mt-0.5 text-sm text-slate-500'>{DEMO_EMAIL} / {DEMO_PASSWORD}</p>
-                </div>
+                </div> */}
             </div>
 
             <div className='flex justify-between w-[80%] mx-auto'>        

@@ -5,123 +5,6 @@ import AdminHeader from '../components/AdminHeader';
 import { Plus, Users, LogIn, LogOut, ArrowRight, CalendarCheck } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Sector } from "recharts";
 
-
-
-
-// const monthlyVisitorTrend = [
-//     { month: "Jan", visitors: 45 },
-//     { month: "Feb", visitors: 58 },
-//     { month: "Mar", visitors: 68 },
-//     { month: "Apr", visitors: 62 },
-//     { month: "May", visitors: 88 },
-//     { month: "Jun", visitors: 98 },
-//     { month: "Jul", visitors: 82 },
-//     { month: "Aug", visitors: 58 },
-//     { month: "Sep", visitors: 0 },
-//     { month: "Oct", visitors: 0 },
-//     { month: "Nov", visitors: 0 },
-//     { month: "Dec", visitors: 0 },
-// ];
-
-// const visitPurposes = [
-//     { name: "Training Enrollment", value: 38, color: "#2563eb" },
-//     { name: "Corporate Training", value: 24, color: "#9333ea" },
-//     { name: "Partnership Meeting", value: 18, color: "#059669" },
-//     { name: "Accreditation Visit", value: 12, color: "#f59e0b" },
-//     { name: "Course Inquiry", value: 8, color: "#ef4444" },
-// ];
-
-// const recentVisitors = [
-//     {
-//         id: "VIS-001",
-//         name: "Adaeze Okonkwo",
-//         initials: "AO",
-//         avatarBg: "bg-cyan-500",
-//         company: "TechBridge Nigeria",
-//         purpose: "Training Enrollment",
-//         date: "2026-08-07",
-//         time: "09:00 AM",
-//         status: "Checked In",
-//     },
-//     {
-//         id: "VIS-002",
-//         name: "Emeka Nwosu",
-//         initials: "EN",
-//         avatarBg: "bg-orange-500",
-//         company: "Digital Solutions Ltd",
-//         purpose: "Partnership Meeting",
-//         date: "2026-08-07",
-//         time: "10:30 AM",
-//         status: "Scheduled",
-//     },
-//     {
-//         id: "VIS-003",
-//         name: "Fatima Al-Hassan",
-//         initials: "FA",
-//         avatarBg: "bg-pink-500",
-//         company: "Federal Ministry of Education",
-//         purpose: "Accreditation Visit",
-//         date: "2026-08-07",
-//         time: "11:00 AM",
-//         status: "Checked In",
-//     },
-//     {
-//         id: "VIS-004",
-//         name: "Chidi Ezenwachi",
-//         initials: "CE",
-//         avatarBg: "bg-purple-500",
-//         company: "Zenith Tech Academy",
-//         purpose: "Course Inquiry",
-//         date: "2026-08-06",
-//         time: "02:00 PM",
-//         status: "Checked Out",
-//     },
-//     {
-//         id: "VIS-005",
-//         name: "Ngozi Amaechi",
-//         initials: "NA",
-//         avatarBg: "bg-blue-500",
-//         company: "First Bank PLC",
-//         purpose: "Corporate Training",
-//         date: "2026-08-06",
-//         time: "09:30 AM",
-//         status: "Checked Out",
-//     },
-//     {
-//         id: "VIS-006",
-//         name: "Tunde Afolabi",
-//         initials: "TA",
-//         avatarBg: "bg-blue-800",
-//         company: "Lagos State Government",
-//         purpose: "Official Visit",
-//         date: "2026-08-05",
-//         time: "10:00 AM",
-//         status: "Cancelled",
-//     },
-//     {
-//         id: "VIS-007",
-//         name: "Blessing Eze",
-//         initials: "BE",
-//         avatarBg: "bg-blue-600",
-//         company: "Independent",
-//         purpose: "Training Enrollment",
-//         date: "2026-08-07",
-//         time: "01:00 AM",
-//         status: "Scheduled",
-//     },
-//     {
-//         id: "VIS-008",
-//         name: "Mohammed Yusuf",
-//         initials: "MY",
-//         avatarBg: "bg-teal-500",
-//         company: "Dangote Group",
-//         purpose: "Corporate Training",
-//         date: "2026-08-08",
-//         time: "09:00 AM",
-//         status: "Scheduled",
-//     },
-// ];
-
 const statusStyles = {
     "Checked In": "bg-emerald-50 text-emerald-700",
     Scheduled: "bg-blue-50 text-blue-700",
@@ -322,15 +205,21 @@ setDashboardData({
                 {/* Charts */}
                 <div className='mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[1.6fr_1fr]'>
                     <div className='rounded-2xl border border-slate-100 bg-white p-6 shadow-sm'>
-                        <h3 className='text-base font-bold text-slate-900'>
-                            Monthly Visitor Trend
-                        </h3>
-                        <p className='text-xs text-slate-400 mt-0.5'>
-                            Total visitors per month in 2026
-                        </p>
-                        <div className='mt-4 h-72'>
+                        <div>
+                            <h3 className='text-base font-bold text-slate-900'>
+                                Monthly Visitor Trend
+                            </h3>
+                            <p className='text-xs text-slate-400 mt-0.5'>
+                                Total visitors per month in 2026
+                            </p>
+                        </div>
+
+                        <div className='mt-4 h-80 w-full'>
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={dashboardData.monthlyTrend}>
+                                <BarChart 
+                                data={dashboardData.monthlyTrend}
+                                margin={{ top: 10, right: 10, left: -20, bottom: 0}}
+                                >
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke='#e2e8f0'/>
                                     <XAxis
                                         dataKey="month"
