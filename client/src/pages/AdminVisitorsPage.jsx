@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Plus, Search, Filter, LogIn, LogOut, XCircle } from "lucide-react";
 import Sidebar from '../components/Sidebar';
 import AdminHeader from '../components/AdminHeader';
+import API_URL from '../config/api';
 
 
 const filterTabs = ["All", "Scheduled", "Checked In", "Checked Out", "Cancelled"];
@@ -111,7 +112,7 @@ export default function AdminVisitorsPage() {
         setLoading(true);
         setError("");
 
-        const response = await fetch("http://localhost:3000/visitors");
+        const response = await fetch(`${API_URL}/visitors`);
         const data = await response.json();
 
         if (!response.ok) {
@@ -172,7 +173,7 @@ export default function AdminVisitorsPage() {
   const handleCheckIn = async (databaseId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:3000/visitors/${databaseId}/check-in`, {
+      const response = await fetch(`${API_URL}/visitors/${databaseId}/check-in`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}`},
       });
@@ -193,7 +194,7 @@ export default function AdminVisitorsPage() {
   const handleCheckOut = async (databaseId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:3000/visitors/${databaseId}/check-out`, {
+      const response = await fetch(`${API_URL}/visitors/${databaseId}/check-out`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -216,7 +217,7 @@ export default function AdminVisitorsPage() {
     
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:3000/visitors/${databaseId}/status`, {
+      const response = await fetch(`${API_URL}/visitors/${databaseId}/status`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -285,7 +286,7 @@ export default function AdminVisitorsPage() {
     setSuccessMessage("");
 
     try {
-      const response = await fetch("http://localhost:3000/visitors", {
+      const response = await fetch(`${API_URL}/visitors`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

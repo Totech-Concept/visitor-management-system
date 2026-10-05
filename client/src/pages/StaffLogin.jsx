@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { Monitor } from "lucide-react"
+import API_URL from '../config/api';
 
 const DEMO_EMAIL = "admin@citinstitute.ng";
 const DEMO_PASSWORD = "admin123";
@@ -33,7 +34,7 @@ export default function StaffLogin() {
     
 
     try {
-        const response = await fetch("http://localhost:3000/staff/login", {
+        const response = await fetch(`${API_URL}/staff/login`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json"

@@ -1,4 +1,5 @@
 import React, { useState} from "react";
+import API_URL from "../../config/api";
 
 export default function ContactForm() {
 
@@ -23,7 +24,7 @@ export default function ContactForm() {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:3000/contact', {
+      const response = await fetch(`${API_URL}/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

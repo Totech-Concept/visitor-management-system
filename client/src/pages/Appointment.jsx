@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Footer from '../components/FooterSection/Footer';
 import { Link } from "react-router-dom";
 import { ChevronLeft, Info } from 'lucide-react';
+import API_URL from '../config/api';
 
 const purposeOptions = [
   "Prospective Student Visit",
@@ -74,7 +75,7 @@ export default function Appointment() {
     setStatus({ state: "loading", message: ""});
 
     try {
-      const response = await fetch("http://localhost:3000/appointments", {
+      const response = await fetch(`${API_URL}/appointments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -104,7 +105,7 @@ export default function Appointment() {
   useEffect(() => {
     const fetchAppointmentStats = async () => {
       try {
-        const response = await fetch("http://localhost:3000/appointments/stats");
+        const response = await fetch(`${API_URL}/appointments/stats`);
 
         const data = await response.json();
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Monitor, Check } from 'lucide-react'
 import HeroButtons from './HeroButtons'
 import heroImage from './Visitor-hero-image.png'
+import API_URL from '../../config/api';
 
 export default function Hero() {
     const [visitorCount, setVisitorCount] = useState(0);
@@ -9,7 +10,7 @@ export default function Hero() {
     useEffect(() => {
       const getVisitor = async() => {
         try {
-          const response = await fetch('http://localhost:3000/visitors/count')
+          const response = await fetch(`${API_URL}/visitors/count`)
 
           if (!response.ok) {
             throw new Error('Failed to fetch visitor count')

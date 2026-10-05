@@ -1,7 +1,9 @@
 require("dotenv").config();
 require("./config/db");
+
 const express = require('express');
 const cors = require("cors");
+
 const visitorRoutes = require("./routes/visitorRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
@@ -10,7 +12,7 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware to parse incoming JSON requests
 app.use(cors());
@@ -40,27 +42,8 @@ app.use((err, req, res, next) => {
     res.status(500).json({ success: false, message: "Something went wrong."});
 })
 
-// Define an API endpoint that returns data
-app.get('/visitors', (req, res) => {
-    res.json(visitors);
-});
-
-app.post('/visitors', (req, res) => {
-    const newVisitor = {
-      id: visitors.length + 1,
-      ...req.body,
-      status: "scheduled"
-    }
-
-    console.log(newVisitor)
-    visitors.push(newVisitor)
-
-    res.json({
-      message: "Visitor added successfully"
-    })
-})
 
 // Start the server and listen to the defined port
 app.listen(PORT, () => {
-    console.log(`Server is live at http://localhost:${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });

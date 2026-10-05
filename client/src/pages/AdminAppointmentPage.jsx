@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link } from "react-router-dom";
-import { Bell, Plus, Menu, List, CalendarRange } from "lucide-react";
+// import { Link } from "react-router-dom";
+import { List, CalendarRange } from "lucide-react";
 import Sidebar from '../components/Sidebar';
 import AdminHeader from '../components/AdminHeader';
+import API_URL from '../config/api';
 
 
 const tabs = [
@@ -151,8 +152,8 @@ export default function AdminAppointmentPage() {
                 setError("");
 
                 const [appointmentsResponse, statsResponse] = await Promise.all([
-                    fetch("http://localhost:3000/appointments"),
-                    fetch("http://localhost:3000/appointments/stats"),
+                    fetch(`${API_URL}/appointments`),
+                    fetch(`${API_URL}/appointments/stats`),
                 ]);
 
                 const appointmentsData = await appointmentsResponse.json();
@@ -260,7 +261,7 @@ export default function AdminAppointmentPage() {
         try {
             const token = localStorage.getItem("token");
 
-            const response = await fetch(`http://localhost:3000/appointments/${appointmentId}/status`,
+            const response = await fetch(`${API_URL}/appointments/${appointmentId}/status`,
                 {
                     method: "PATCH",
                     headers: {

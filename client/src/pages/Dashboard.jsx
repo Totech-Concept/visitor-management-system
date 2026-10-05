@@ -4,6 +4,7 @@ import Sidebar from '../components/Sidebar';
 import AdminHeader from '../components/AdminHeader';
 import { Plus, Users, LogIn, LogOut, ArrowRight, CalendarCheck } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Sector } from "recharts";
+import API_URL from '../config/api';
 
 const statusStyles = {
     "Checked In": "bg-emerald-50 text-emerald-700",
@@ -87,7 +88,7 @@ export default function Dashboard() {
 
                 const token = localStorage.getItem("token");
 
-                const response = await fetch("http://localhost:3000/dashboard/stats",
+                const response = await fetch(`${API_URL}/dashboard/stats`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`

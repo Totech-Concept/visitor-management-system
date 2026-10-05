@@ -1,3 +1,5 @@
+import API_URL from "../../client/src/config/api";
+
 export async function getCurrentStaff() {
     const token = localStorage.getItem("token");
 
@@ -7,7 +9,7 @@ export async function getCurrentStaff() {
 
     try {
         const response = await fetch(
-            "http://localhost:3000/staff/profile",
+            `${API_URL}/staff/profile`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`

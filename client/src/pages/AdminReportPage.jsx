@@ -3,6 +3,7 @@ import { Download, TrendingUp, Users, Clock, CircleX, ArrowUp, ArrowDown, ArrowR
 import { ResponsiveContainer, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Sector } from 'recharts';
 import Sidebar from '../components/Sidebar';
 import AdminHeader from '../components/AdminHeader';
+import API_URL from '../config/api';
 
 // const stats = [
 //     {
@@ -142,7 +143,7 @@ export default function AdminReportPage() {
                 setError("");
 
                 const token = localStorage.getItem("token");
-                const response = await fetch("http://localhost:3000/reports/analytics",
+                const response = await fetch(`${API_URL}/reports/analytics`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
