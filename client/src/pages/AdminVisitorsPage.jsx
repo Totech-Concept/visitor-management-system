@@ -213,14 +213,20 @@ export default function AdminVisitorsPage() {
 
   // Handler: Cancel Visitor
   const handleCancelVisitor = async (databaseId) => {
-    if (!window.confirm("Are you sure you want to cancel this visitor's schedule?")) return;
-    
+    const confirmed = window.confirm("Are you sure you want to cancel this visitor's schedule?");
+    if (!confirmed) return;
+
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`${API_URL}/visitors/${databaseId}/status`, {
         method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json" 
+        },
+        body: JSON.stringify({ status: "Cancelled" })
       });
+
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Failed to cancel visitor schedule");
 
@@ -230,7 +236,7 @@ export default function AdminVisitorsPage() {
         )
       );
     } catch (error) {
-      console.error("Check Out visitor failed", error.message)
+      console.error("Check Out visitor failed", error.message);
     }
   };
 
@@ -505,7 +511,7 @@ export default function AdminVisitorsPage() {
                               <button
                                 type='button'
                                 onClick={() => handleCancelVisitor(visitor.databaseId)}
-                                className='inline-flex items-center gap-1 rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-900 transition' 
+                                className='inline-flex items-center gap-1 rounded-lg bg-red-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-800 transition' 
                               >
                                 <XCircle className='h-3.5 w-3.5' /> Cancel
                               </button>
@@ -598,9 +604,9 @@ export default function AdminVisitorsPage() {
                               <button
                                 type='button'
                                 onClick={() => handleCancelVisitor(visitor.databaseId)}
-                                className='inline-flex items-center gap-1 rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-900 transition' 
+                                className='inline-flex items-center gap-1 rounded-lg bg-red-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-800 transition' 
                               >
-                                <XCircle className='h-3.5 w-3.5' /> Check Out
+                                <XCircle className='h-3.5 w-3.5' /> Cancel
                               </button>
                             )}
                             </div>

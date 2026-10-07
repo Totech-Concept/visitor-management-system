@@ -292,9 +292,13 @@ export default function AdminReportPage() {
                     <div className='rounded-2xl border border-slate-100 bg-white p-6 shadow-sm'>
                         <h3 className='text-base font-bold text-slate-900'>Monthly Visits - 2026</h3>
                         <p className='text-xs text-slate-500'>Total visitors recorded each month</p>
-                        <div className='mt-4 h-72'>
+                        
+                        <div className='mt-4 h-[80%] w-full'>
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={monthlyVisits}>
+                                <BarChart 
+                                data={monthlyVisits}
+                                margin = {{ top: 70, right: 10, left: -20, bottom: 0}}
+                                >
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke='#e2e8f0' />
                                     <XAxis
                                         dataKey='month'
