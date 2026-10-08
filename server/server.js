@@ -31,6 +31,12 @@ app.get('/', (req, res) => {
     res.send('Server is running successfully!');
 });
 
+app.get("/health", (req, res) => {
+    res.status(200).json({
+        status: "healthy"
+    });
+});
+
 // 404 fallback
 app.use((req, res) => {
     res.status(404).json({ success: false, message: "Route not found." });
