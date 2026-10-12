@@ -23,10 +23,6 @@ const getVisitorCount = async (req, res) => {
 
 };
 
-// Generate visitor reference
-// function generateVisitorReference(id) {
-//   return `VIS-${String(id).padStart(3, "0")}`;
-// }
 
 // GET ALL VISITORS
 const getAllVisitors = async (req, res) => {
