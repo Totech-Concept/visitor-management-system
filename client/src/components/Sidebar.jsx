@@ -28,9 +28,13 @@ export default function Sidebar({ active, user, open = false, onClose }) {
         className={`fixed lg:sticky top-0 left-0 z-50 flex h-screen w-70 shrink-0 flex-col border-r border-slate-100 bg-white transition-transform duration-200 ease-in-out lg:z-auto lg:translate-x-0 ${
         open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}>
-        {/* Brand */}
+
+        {/* Brand / Home Link */}
         <div className='flex items-center justify-between border-b border-slate-100 px-6 py-3'>
-            <div className='flex items-center gap-3'>
+            <Link 
+                to="/"
+                onClick={onClose}
+                className='flex items-center gap-3 group text-left focus:outline-none'>
                 <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600'>
                     <Monitor className='h-5 w-5 text-white' strokeWidth={2.5}/>
                 </div>
@@ -38,7 +42,7 @@ export default function Sidebar({ active, user, open = false, onClose }) {
                     <p className='font-bold text-slate-900'>CIT Institute</p>
                     <p className='text-xs text-slate-500'>Visitor Management</p>
                 </div>
-            </div>
+            </Link>
 
             {/* Close button - mobile only */}
             <button

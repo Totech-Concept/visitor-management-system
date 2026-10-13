@@ -158,7 +158,7 @@ async function deleteContact(req, res) {
             });
         }
 
-        const {result} = await pool.execute(
+        const [result] = await pool.execute(
             "DELETE FROM contacts WHERE id = ?", [id]
         );
 
