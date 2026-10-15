@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { replace, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Plus, Search, Filter, LogIn, LogOut, XCircle } from "lucide-react";
 import Sidebar from '../components/Sidebar';
 import AdminHeader from '../components/AdminHeader';
@@ -82,6 +82,9 @@ function isTodayOrFuture(rawDate) {
 }
 
 export default function AdminVisitorsPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState("All");
   const [query, setQuery] = useState("");
