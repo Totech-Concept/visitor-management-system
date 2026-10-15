@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link } from "react-router-dom";
+import { replace, useLocation, useNavigate } from "react-router-dom";
 import { Plus, Search, Filter, LogIn, LogOut, XCircle } from "lucide-react";
 import Sidebar from '../components/Sidebar';
 import AdminHeader from '../components/AdminHeader';
@@ -106,6 +106,34 @@ export default function AdminVisitorsPage() {
     status: "Scheduled",
     notes: "",
   });
+
+  useEffect(() => {
+    const appointment = location.state?.appointment;
+
+    if (!appointment) return;
+
+    setVisitorForm({
+      full_name: appointment.full_name || "",
+      email: appointment.email || "",
+      phone: appointment.phone || "",
+      company: appointment.company || "",
+      purpose: purposeOptions.includes(appointment.purpose) ? appointment.purpose : "Other",
+      host: appointment.host || "",
+      appointment_id: String(appointment.id),
+      status: "Scheduled",
+      notes: appointment.notes || "",
+    });
+
+    setFormError("");
+    setSuccessMessage("");
+    setShowAddVisitor(true);
+
+    // Clear the navigation state so it isn't reused
+    Navigate(location.pathname, {
+      replace: true,
+      state: null,
+    });
+  }, [location, navigate]);
   
     const fetchVisitors = async () => {
       try {

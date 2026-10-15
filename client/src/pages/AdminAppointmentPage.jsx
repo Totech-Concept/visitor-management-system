@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-// import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { List, CalendarRange } from "lucide-react";
 import Sidebar from '../components/Sidebar';
 import AdminHeader from '../components/AdminHeader';
@@ -144,6 +144,14 @@ export default function AdminAppointmentPage() {
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
+    const navigate = useNavigate();
+
+    const handleAddToVisitors = (appointment) => {
+        navigate("/dashboard/visitors", {
+            state: { appointment },
+        });
+    };
 
     useEffect(() => {
         const fetchAppointmentsData = async () => {
@@ -420,6 +428,14 @@ export default function AdminAppointmentPage() {
                                         <p className='text-xs text-slate-400'>{appt.displayTime}</p>
                                     </div>
                                     <StatusBadge status={appt.displayStatus} />
+
+                                    {appt.status === "confirmed" && (
+                                        <button
+                                            type='button'
+                                            onClick={() => handleAddToVisitors(appt)}
+                                            className='rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700'
+                                        >Add to Visitors</button>
+                                    )}
 
                                     {canCancelAppointment(appt) && (
                                         <button
