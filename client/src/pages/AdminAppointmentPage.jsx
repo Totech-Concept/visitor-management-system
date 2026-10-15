@@ -130,6 +130,15 @@ function canCancelAppointment(appointment) {
 }
 
 export default function AdminAppointmentPage() {
+
+    const navigate = useNavigate();
+
+    const handleAddToVisitors = (appointment) => {
+        navigate("/dashboard/visitors", {
+            state: { appointment },
+        });
+    };
+
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [activeTab, setActiveTab] = useState("approved");
     const [view, setView] = useState("list");
@@ -145,13 +154,6 @@ export default function AdminAppointmentPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    const navigate = useNavigate();
-
-    const handleAddToVisitors = (appointment) => {
-        navigate("/dashboard/visitors", {
-            state: { appointment },
-        });
-    };
 
     useEffect(() => {
         const fetchAppointmentsData = async () => {
@@ -269,7 +271,7 @@ export default function AdminAppointmentPage() {
         try {
             const token = localStorage.getItem("token");
 
-            const response = await fetch(`${API_URL}/appointments/${appointmentId}/status`,
+            const response = await fetch(`${API_URL}/appointments/${appointment.id}/status`,
                 {
                     method: "PATCH",
                     headers: {
@@ -290,13 +292,10 @@ export default function AdminAppointmentPage() {
 
             // Update the appointment state locally
             setAppointments((currentAppointments) => 
-                currentAppointments.map((appointment) => 
-                    appointment.id === appointmentId
-                        ? {
-                            ...appointment,
-                            status: "cancelled",
-                        }
-                        : appointment
+                currentAppointments.map((item) => 
+                    appointment.id === appointment.id
+                        ? { ...item, status: "cancelled"}
+                        : item
                 )
             );
 
@@ -440,7 +439,7 @@ export default function AdminAppointmentPage() {
                                     {canCancelAppointment(appt) && (
                                         <button
                                             type='button'
-                                            onClick={() => handleCancelAppointment(appt.id)}
+                                            onClick={() => handleCancelAppointment(appt)}
                                             className='rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50'
                                             >Cancel</button>
                                     )}

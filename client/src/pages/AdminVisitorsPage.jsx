@@ -129,7 +129,7 @@ export default function AdminVisitorsPage() {
     setShowAddVisitor(true);
 
     // Clear the navigation state so it isn't reused
-    Navigate(location.pathname, {
+    navigate(location.pathname, {
       replace: true,
       state: null,
     });
