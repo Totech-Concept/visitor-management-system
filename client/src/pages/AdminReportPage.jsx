@@ -293,11 +293,11 @@ export default function AdminReportPage() {
                         <h3 className='text-base font-bold text-slate-900'>Monthly Visits - 2026</h3>
                         <p className='text-xs text-slate-500'>Total visitors recorded each month</p>
                         
-                        <div className='mt-4 h-[80%] w-full'>
+                        <div className='mt-4 h-64 sm:h-80 lg:h-96 w-full'>
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart 
                                 data={monthlyVisits}
-                                margin = {{ top: 70, right: 10, left: -20, bottom: 0}}
+                                margin = {{ top: 20, right: 20, left: -20, bottom: 0}}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke='#e2e8f0' />
                                     <XAxis
@@ -374,9 +374,12 @@ export default function AdminReportPage() {
                 <div className='mt-6 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm'>
                     <h3 className='text-base font-bold text-slate-900'>Daily Visitor Trend - This week</h3>
                     <p className='text-xs text-slate-500'>Number of visitors received each day</p>
-                    <div className='mt-4 h-72'>
+                    <div className='mt-4 h-64 sm:h-72 lg:h-80 w-full'>
                         <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={dailyVisitorTrend}>
+                            <LineChart 
+                                data={dailyVisitorTrend}
+                                margin={{ top: 10, right: 20, left: -10, bottom: 0 }}
+                                >
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke='#e2e8f0' />
                                 <XAxis 
                                     dataKey="day"

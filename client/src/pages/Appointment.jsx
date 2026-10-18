@@ -14,6 +14,7 @@ const purposeOptions = [
   "Partnership Meeting",
   "Accreditation Visit",
   "Interview",
+  "Official Visit",
   "Other"
 ];
 

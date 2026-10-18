@@ -215,7 +215,7 @@ setDashboardData({
                             </p>
                         </div>
 
-                        <div className='mt-4 h-[80%] w-full'>
+                        <div className='mt-4 h-64 sm:h-80 lg:h-96 w-full'>
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart 
                                 data={dashboardData.monthlyTrend}
