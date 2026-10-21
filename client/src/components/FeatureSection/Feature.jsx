@@ -63,7 +63,7 @@ export default function Feature() {
                     return (
                     <div 
                     key={feature.id}
-                    className='border border-slate-200 px-3 py-4 rounded-2xl bg-white p-7 shadow-sm'
+                    className='border border-slate-200 px-3 py-4 rounded-2xl bg-white p-7 shadow-sm transition-all duration-400 hover:-translate-y-3 hover:shadow-md hover:border-blue-200 cursor-pointer'
                     >
                         <div className='flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50'>
                             <IconComponent className='h-5 w-5 text-blue-600' strokeWidth={2}/>

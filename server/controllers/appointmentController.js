@@ -37,7 +37,7 @@ async function getAllAppointments(req, res) {
                 created_at,
                 updated_at 
             FROM appointments 
-            ORDER BY appointment_date ASC, appointment_time ASC`
+            ORDER BY appointment_date DESC, appointment_time DESC`
         );
 
         return res.status(200).json({

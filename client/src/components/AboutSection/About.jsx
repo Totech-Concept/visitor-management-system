@@ -1,5 +1,5 @@
 import React from 'react'
-import aboutImage from './visitor-about-image.png'
+import aboutImage from './visitorAboutImage.png'
 
 
 const stats = [
