@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Monitor, Check } from 'lucide-react'
 import HeroButtons from './HeroButtons'
-import heroImage from './VisitorHeroImage.png'
+import heroImage from './visitorHeroImage.png'
 import API_URL from '../../config/api';
 
 export default function Hero() {
