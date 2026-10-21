@@ -180,6 +180,7 @@ const createVisitor = async (req, res) => {
   }
 };
 
+
 // CHECK IN VISITOR
 const checkInVisitor = async (req, res) => {
   const { id } = req.params;

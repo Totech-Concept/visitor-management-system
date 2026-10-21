@@ -155,6 +155,8 @@ export default function AdminVisitorsPage() {
         const formattedVisitors = visitorData.map((visitor) => {
         const fullName = visitor.full_name || "Unknown Visitor";
 
+        console.log("Visitor timestamp from API:", visitor.created_at);
+        
           const createdDate = visitor.created_at
             ? new Date(visitor.created_at)
             : null;
