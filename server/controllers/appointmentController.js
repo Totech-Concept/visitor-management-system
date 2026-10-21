@@ -191,7 +191,7 @@ async function createAppointment(req, res) {
                 notes,
                 status
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 1 HOUR))
         `, [
             referenceNumber,
             fullName,
@@ -322,6 +322,8 @@ const getAppointmentStats = async (req, res) => {
     }
 };
 
+
+// Update status
 const updateAppointmentStatus = async (req, res) => {
     try {
         const { id } = req.params;

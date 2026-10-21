@@ -125,10 +125,10 @@ const createVisitor = async (req, res) => {
 
   try {
     const visitorReference = `VIS-${Date.now().toString().slice(-8)}`;
-    
     const visitorStatus = status || "Checked In";
 
-    const checkInTime = visitorStatus === "Checked In" ? new Date() : null;
+    // const checkInTime = visitorStatus === "Checked In" ? new Date() : null;
+    const checkInQueryValue = visitorStatus === "Checked In" ? "DATE_ADD(NOW(), INTERVAL 1 HOUR)" : "NULL";
 
     const [result] = await pool.query(`
         INSERT INTO visitors (
@@ -144,7 +144,7 @@ const createVisitor = async (req, res) => {
           check_in_time,
           notes
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ${checkInQueryValue}, ?)
       `, 
       [
         visitorReference,
@@ -214,7 +214,7 @@ const checkInVisitor = async (req, res) => {
     await pool.query(`
         UPDATE visitors SET
           status = "Checked In",
-          check_in_time = NOW(),
+          check_in_time = DATE_ADD(NOW(), INTERVAL 1 HOUR),
           check_out_time = NULL
         WHERE id = ?
       `, [id]);
@@ -267,7 +267,7 @@ const checkOutVisitor = async (req, res) => {
     await pool.query(`
       UPDATE visitors SET
         status = 'Checked Out',
-        check_out_time = NOW()
+        check_out_time = DATE_ADD(NOW(), INTERVAL 1 HOUR)
       WHERE id = ?
       `, [id]);
 
@@ -345,7 +345,7 @@ const updateVisitorsStatus = async (req, res) => {
         query = `
           UPDATE visitors SET
             status = ?,
-            check_in_time = NOW(),
+            check_in_time = DATE_ADD(NOW(), INTERVAL 1 HOUR),
             check_out_time = NULL
           WHERE id = ?
         `;
@@ -355,7 +355,7 @@ const updateVisitorsStatus = async (req, res) => {
         query = `
           UPDATE visitors SET 
             status = ?,
-            check_out_time = NOW()
+            check_out_time = DATE_ADD(NOW(), INTERVAL 1 HOUR)
           WHERE id = ?
         `;
         values = [status, id];
