@@ -16,6 +16,7 @@ const pool = mysql.createPool({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
 
+    timezone: '+01:00',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
@@ -32,3 +33,4 @@ pool.getConnection()
     .catch(error => {
         console.error("mySQL connection failed:", error.message);
     });
+
