@@ -147,16 +147,18 @@ export default function AdminVisitorsPage() {
         const response = await fetch(`${API_URL}/visitors`);
         const data = await response.json();
 
+        console.log("Visitors API response:", data);
+
         if (!response.ok) {
           throw new Error(data.message || "Failed to fetch visitors");
         }
 
         const visitorData = data.visitors || data;
+        console.log("First visitor timestamp:", visitorData[0]?.created_at);
         const formattedVisitors = visitorData.map((visitor) => {
         const fullName = visitor.full_name || "Unknown Visitor";
 
-        console.log("Visitor timestamp from API:", visitor.created_at);
-        
+
           const createdDate = visitor.created_at
             ? new Date(visitor.created_at)
             : null;
