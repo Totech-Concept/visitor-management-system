@@ -189,7 +189,8 @@ async function createAppointment(req, res) {
                 appointment_date,
                 appointment_time,
                 notes,
-                status
+                status,
+                created_at
             )
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 1 HOUR))
         `, [

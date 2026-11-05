@@ -144,7 +144,7 @@ const createVisitor = async (req, res) => {
           check_in_time,
           notes
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ${checkInQueryValue}, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ${checkInQueryValue}, ?)
       `, 
       [
         visitorReference,
@@ -156,7 +156,6 @@ const createVisitor = async (req, res) => {
         host,
         appointment_id || null,
         visitorStatus,
-        checkInTime,
         notes || null
       ]
     );
