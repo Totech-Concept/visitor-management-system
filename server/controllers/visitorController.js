@@ -29,23 +29,27 @@ const getAllVisitors = async (req, res) => {
   try {
     const [visitors] = await pool.query(`
       SELECT
-        id,
-        visitor_reference,
-        full_name,
-        email,
-        phone,
-        company,
-        purpose,
-        host,
-        appointment_id,
-        status,
-        check_in_time,
-        check_out_time,
-        notes,
-        created_at,
-        updated_at
-      FROM visitors
-      ORDER BY created_at DESC
+        v.id,
+        v.visitor_reference,
+        v.full_name,
+        v.email,
+        v.phone,
+        v.company,
+        v.purpose,
+        v.host,
+        v.appointment_id,
+        v.status,
+        v.check_in_time,
+        v.check_out_time,
+        v.notes,
+        v.created_at,
+        v.updated_at,
+        a.appointment_date,
+        a.appointment_time
+      FROM visitors v
+      LEFT JOIN appointments a
+        ON v.appointment_id = a.id
+      ORDER BY v.created_at DESC
     `);
 
     res.status(200).json({

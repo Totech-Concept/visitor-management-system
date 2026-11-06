@@ -69,6 +69,40 @@ function getCleanLocalDateString(rawDate) {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 }
 
+const formatDatabaseTime = (value) => {
+  if (!value) return "—";
+
+  // MySQL DATETIME values are returned as strings.
+  // Read their components directly to avoid browser timezone shifts.
+  const match = String(value).match(
+    /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/
+  );
+
+  if (!match) return "—";
+
+  const [, year, month, day, hour, minute] = match;
+
+  const hours = Number(hour);
+  const period = hours >= 12 ? "PM" : "AM";
+  const displayHour = hours % 12 || 12;
+
+  return `${displayHour.toString().padStart(2, "0")}:${minute} ${period}`;
+};
+
+const formatDatabaseDate = (value) => {
+  if (!value) return "—";
+
+  const match = String(value).match(
+    /^(\d{4})-(\d{2})-(\d{2})/
+  );
+
+  if (!match) return "—";
+
+  const [, year, month, day] = match;
+
+  return `${year}-${month}-${day}`;
+};
+
 // Helper: Check if rawDate string (YYYY-MM-DD) is today or in the future
 function isTodayOrFuture(rawDate) {
   if (!rawDate || rawDate === "-" || rawDate.length < 10) return false;
@@ -157,19 +191,24 @@ export default function AdminVisitorsPage() {
         const fullName = visitor.full_name || "Unknown Visitor";
 
 
-          const createdDate = visitor.created_at
-            ? new Date(visitor.created_at)
-            : null;
+          // const createdDate = visitor.created_at
+          //   ? new Date(visitor.created_at)
+          //   : null;
 
-          const date = createdDate
-            ? getCleanLocalDateString(createdDate)
-            : "-";
+          // const date = createdDate
+          //   ? getCleanLocalDateString(createdDate)
+          //   : "-";
 
-          const time = createdDate
-            ? createdDate.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
+          // const time = createdDate
+          //   ? createdDate.toLocaleTimeString([], {
+          //     hour: "2-digit",
+          //     minute: "2-digit",
+          //   })
+          //   : "-";
+
+          const date = formatDatabaseDate(visitor.appointment_date);
+          const time = visitor.appointment_time
+            ? formatDatabaseTime(`2000-01-01 ${visitor.appointment_time}`)
             : "-";
 
           return {
@@ -187,6 +226,9 @@ export default function AdminVisitorsPage() {
             rawDate: date,
             host: visitor.host,
             status: visitor.status,
+
+            checkInTime: formatDatabaseTime(visitor.check_in_time),
+            checkOutTime: formatDatabaseTime(visitor.check_out_time),
           };
         });
 
@@ -496,6 +538,24 @@ export default function AdminVisitorsPage() {
                             <StatusBadge status={visitor.status} />
                           </div>
 
+                          <div>
+                            <p className='text-[10px] uppercase font-bold text-slate-400'>
+                              Check-in Time
+                            </p>
+                            <p className='font-medium text-slate-700 mt-0.5'>
+                              {visitor.checkInTime}
+                            </p>
+                          </div>
+
+                          <div>
+                            <p className='text-[10px] uppercase font-bold text-slate-400'>
+                              Check-out Time
+                            </p>
+                            <p className='font-medium text-slate-700 mt-0.5'>
+                              {visitor.checkOutTime}
+                            </p>
+                          </div>
+
                           <hr className='my-3 border-slate-100' />
 
                           <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs ml-2'>
@@ -567,6 +627,8 @@ export default function AdminVisitorsPage() {
                         <th className='py-3 pr-4'>Appointment</th>
                         <th className='py-3 pr-4'>Host</th>
                         <th className='py-3 pr-4'>Status</th>
+                        <th className='py-3 pr-4'>Check-in Time</th>
+                        <th className='py-3 pr-4'>Check-out Time</th>
                         <th className='py-3 text-right pr-2'>Actions</th>
                       </tr>
                     </thead>
@@ -645,6 +707,13 @@ export default function AdminVisitorsPage() {
                             )}
                             </div>
                           </td>
+                          <td className='py-4 pr-4 text-slate-600'>
+                            {visitor.checkInTime}
+                          </td>
+                          
+                          <td className='py-4 pr-4 text-slate-600'>
+                            {visitor.checkOutTime}
+                          </td>         
                         </tr>
                         );
                       })}
