@@ -330,13 +330,6 @@ const updateAppointmentStatus = async (req, res) => {
         const { id } = req.params;
         const { status } = req.body;
 
-        // Only cancellation is allowed through this endpoint for now
-        // if (status !== "cancelled") {
-        //     return res.status(400).json({
-        //         message: "Invalid appointment status."
-        //     });
-        // }
-
         
         // Validate allowed status options
         const allowedStatuses = ["confirmed", "cancelled", "checked_in", "check_out"];

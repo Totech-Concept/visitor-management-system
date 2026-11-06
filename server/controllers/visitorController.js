@@ -202,7 +202,7 @@ const checkInVisitor = async (req, res) => {
     const currentStatus = visitors[0].status;
 
     // Visitor must be scheduled before checking in
-    if (currentStatus !== "Scheduled") {
+    if (currentStatus !== 'Scheduled') {
       return res.status(400).json({
         success: false,
         message: `Visitor cannot be checked in because their current status is "${currentStatus}"`
@@ -212,7 +212,7 @@ const checkInVisitor = async (req, res) => {
     // Check in visitor
     await pool.query(`
         UPDATE visitors SET
-          status = "Checked In",
+          status = 'Checked In',
           check_in_time = DATE_ADD(NOW(), INTERVAL 1 HOUR),
           check_out_time = NULL
         WHERE id = ?
