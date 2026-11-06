@@ -538,7 +538,8 @@ export default function AdminVisitorsPage() {
                             <StatusBadge status={visitor.status} />
                           </div>
 
-                          <div>
+                          <hr className='my-3 border-slate-100' />
+                           <div>
                             <p className='text-[10px] uppercase font-bold text-slate-400'>
                               Check-in Time
                             </p>
@@ -556,7 +557,6 @@ export default function AdminVisitorsPage() {
                             </p>
                           </div>
 
-                          <hr className='my-3 border-slate-100' />
 
                           <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs ml-2'>
                             <div>
@@ -627,9 +627,9 @@ export default function AdminVisitorsPage() {
                         <th className='py-3 pr-4'>Appointment</th>
                         <th className='py-3 pr-4'>Host</th>
                         <th className='py-3 pr-4'>Status</th>
+                        <th className='py-3 text-right pr-2'>Actions</th>  
                         <th className='py-3 pr-4'>Check-in Time</th>
                         <th className='py-3 pr-4'>Check-out Time</th>
-                        <th className='py-3 text-right pr-2'>Actions</th>
                       </tr>
                     </thead>
                     <tbody className='divide-y divide-slate-50'>
