@@ -256,15 +256,13 @@ export default function AdminVisitorsPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Failed to check in visitor");
 
-      setVisitors((prev) =>
-        prev.map((item) =>
-          item.databaseId === databaseId ? { ...item, status: "Checked In" } : item
-        )
-      );
+      await fetchVisitors(); // Refresh the visitor list after check-in
+
+      console.log(data.message || "Visitor checked in successfully");
     } catch (error) {
       console.error("Check In visitor failed", error.message);
     }
-  }
+  };
 
   // Handler: Check-Out Visitor
   const handleCheckOut = async (databaseId) => {
@@ -277,11 +275,9 @@ export default function AdminVisitorsPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Failed to check out visitor");
 
-      setVisitors((prev) =>
-        prev.map((item) => 
-          item.databaseId === databaseId ? { ...item, status: "Checked Out" } : item
-        )
-      );
+      await fetchVisitors(); // Refresh the visitor list after check-out
+
+      console.log(data.message || "Visitor checked out successfully");
     } catch (error) {
       console.error("Check Out visitor failed", error.message)
     }
@@ -312,7 +308,7 @@ export default function AdminVisitorsPage() {
         )
       );
     } catch (error) {
-      console.error("Check Out visitor failed", error.message);
+      console.error("Cancel visitor failed", error.message);
     }
   };
 
@@ -492,7 +488,7 @@ export default function AdminVisitorsPage() {
             </div>
 
             {successMessage && (
-              <div className='mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emeraldn-700'>
+              <div className='mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700'>
                 {successMessage}
               </div>
             )}
@@ -539,24 +535,6 @@ export default function AdminVisitorsPage() {
                           </div>
 
                           <hr className='my-3 border-slate-100' />
-                           <div>
-                            <p className='text-[10px] uppercase font-bold text-slate-400'>
-                              Check-in Time
-                            </p>
-                            <p className='font-medium text-slate-700 mt-0.5'>
-                              {visitor.checkInTime}
-                            </p>
-                          </div>
-
-                          <div>
-                            <p className='text-[10px] uppercase font-bold text-slate-400'>
-                              Check-out Time
-                            </p>
-                            <p className='font-medium text-slate-700 mt-0.5'>
-                              {visitor.checkOutTime}
-                            </p>
-                          </div>
-
 
                           <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs ml-2'>
                             <div>
@@ -578,8 +556,29 @@ export default function AdminVisitorsPage() {
                             </div>
                           </div>
 
-                          {/* Receptionist Action Buttons (Mobile) */}
-                          <div className='mt-4 flex items-center justify-end gap-2 border-t border-slate-100 pt-3'>
+                          {/* Timestamps & Action Buttons (Mobile) */}
+                          <div className='mt-4 border-t border-slate-100 pt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
+                            <div className='flex items-center gap-4 text-xs'>
+                              <div>
+                                <p className='text-[10px] uppercase font-bold text-slate-400'>
+                                  Check-in Time
+                                </p>
+                                <p className='font-medium text-slate-700 mt-0.5'>
+                                  {visitor.checkInTime}
+                                </p>
+                              </div>
+                              <div>
+                                <p className='text-[10px] uppercase font-bold text-slate-400'>
+                                  Check-out Time
+                                </p>
+                                <p className='font-medium text-slate-700 mt-0.5'>
+                                  {visitor.checkOutTime}
+                                </p>
+                            </div>
+                          </div>
+
+
+                          <div className='flex items-center gap-2 justify-end'>
                             {!hasActions && (
                               <span className='text-xs text-slate-400 italic'>No actions available</span>
                             )}
@@ -611,6 +610,7 @@ export default function AdminVisitorsPage() {
                               </button>
                             )}
                           </div>
+                        </div>
                         </div>
                         );
                     })}
@@ -707,11 +707,11 @@ export default function AdminVisitorsPage() {
                             )}
                             </div>
                           </td>
-                          <td className='py-4 pr-4 text-slate-600'>
+                          <td className='py-4 pr-4 text-slate-600 text-sm'>
                             {visitor.checkInTime}
                           </td>
                           
-                          <td className='py-4 pr-4 text-slate-600'>
+                          <td className='py-4 pr-4 text-slate-600 text-sm'>
                             {visitor.checkOutTime}
                           </td>         
                         </tr>
