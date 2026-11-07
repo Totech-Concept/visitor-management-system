@@ -61,13 +61,13 @@ function getInitials(fullName) {
   ).toUpperCase();
 }
 
-function getCleanLocalDateString(rawDate) {
-  if (!rawDate) return "";
-  if (typeof rawDate === "string") return rawDate.slice(0, 10);
-  const d = new Date(rawDate);
-  if (isNaN(d.getTime())) return String(rawDate).slice(0, 10);
-  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
-}
+// function getCleanLocalDateString(rawDate) {
+//   if (!rawDate) return "";
+//   if (typeof rawDate === "string") return rawDate.slice(0, 10);
+//   const d = new Date(rawDate);
+//   if (isNaN(d.getTime())) return String(rawDate).slice(0, 10);
+//   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
+// }
 
 const formatDatabaseTime = (value) => {
   if (!value) return "—";
@@ -75,12 +75,12 @@ const formatDatabaseTime = (value) => {
   // MySQL DATETIME values are returned as strings.
   // Read their components directly to avoid browser timezone shifts.
   const match = String(value).match(
-    /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/
+    /^(?:\d{4}-\d{2}-\d{2}[ T])?(\d{2}):(\d{2})(?::\d{2})?/
   );
 
   if (!match) return "—";
 
-  const [, year, month, day, hour, minute] = match;
+  const [, hour, minute] = match;
 
   const hours = Number(hour);
   const period = hours >= 12 ? "PM" : "AM";
@@ -190,21 +190,6 @@ export default function AdminVisitorsPage() {
         const formattedVisitors = visitorData.map((visitor) => {
         const fullName = visitor.full_name || "Unknown Visitor";
 
-
-          // const createdDate = visitor.created_at
-          //   ? new Date(visitor.created_at)
-          //   : null;
-
-          // const date = createdDate
-          //   ? getCleanLocalDateString(createdDate)
-          //   : "-";
-
-          // const time = createdDate
-          //   ? createdDate.toLocaleTimeString([], {
-          //     hour: "2-digit",
-          //     minute: "2-digit",
-          //   })
-          //   : "-";
 
           const date = formatDatabaseDate(visitor.appointment_date);
           const time = visitor.appointment_time
