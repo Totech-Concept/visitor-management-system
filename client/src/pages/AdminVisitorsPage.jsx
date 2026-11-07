@@ -191,11 +191,8 @@ export default function AdminVisitorsPage() {
         const fullName = visitor.full_name || "Unknown Visitor";
 
 
-          const date = formatDatabaseDate(visitor.appointment_date);
-          const time = visitor.appointment_time
-            ? formatDatabaseTime(`2000-01-01 ${visitor.appointment_time}`)
-            : "-";
-
+          const visitDate = formatDatabaseDate(visitor.created_at);
+      
           return {
             id: visitor.visitor_reference,
             databaseId: visitor.id,
@@ -206,8 +203,7 @@ export default function AdminVisitorsPage() {
             phone: visitor.phone,
             company: visitor.company || "Individual",
             purpose: visitor.purpose,
-            date,
-            time,
+            date: visitDate,
             rawDate: date,
             host: visitor.host,
             status: visitor.status,
@@ -536,8 +532,8 @@ export default function AdminVisitorsPage() {
                               <p className='font-medium text-slate-700 mt-0.5'>{visitor.host}</p>
                             </div>
                             <div>
-                              <p className='text-[10px] uppercase font-bold text-slate-400'>Appointment</p>
-                              <p className='text-slate-700'>{visitor.date} . {visitor.time}</p>
+                              <p className='text-[10px] uppercase font-bold text-slate-400'>Date</p>
+                              <p className='text-slate-700'>{visitor.date}</p>
                             </div>
                           </div>
 
@@ -609,7 +605,7 @@ export default function AdminVisitorsPage() {
                         <th className='py-3 pr-4'>Visitor</th>
                         <th className='py-3 pr-4'>Contact</th>
                         <th className='py-3 pr-4'>Purpose</th>
-                        <th className='py-3 pr-4'>Appointment</th>
+                        <th className='py-3 pr-4'>Date</th>
                         <th className='py-3 pr-4'>Host</th>
                         <th className='py-3 pr-4'>Status</th>
                         <th className='py-3 text-right pr-2'>Actions</th>  
@@ -650,7 +646,6 @@ export default function AdminVisitorsPage() {
                           </td>
                           <td className='py-4 pr-4'>
                             <p className='text-slate-900'>{visitor.date}</p>
-                            <p className='text-xs text-slate-400'>{visitor.time}</p>
                           </td>
                           <td className='py-4 pr-4 text-slate-600'>
                             {visitor.host}
