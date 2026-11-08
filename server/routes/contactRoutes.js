@@ -7,7 +7,6 @@ const contactController = require("../controllers/contactController");
 // GET    /api/contact         -> list all submitted messages
 // GET    /api/contact/:id     -> get a single message
 // DELETE /api/contact/:id     -> delete a message
-// PUT    /api/contact/:id     -> update a message
 
 router.get("/", contactController.getAllContacts);
 router.post("/", contactController.createContact);
