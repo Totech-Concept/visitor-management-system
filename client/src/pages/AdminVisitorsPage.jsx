@@ -61,13 +61,6 @@ function getInitials(fullName) {
   ).toUpperCase();
 }
 
-// function getCleanLocalDateString(rawDate) {
-//   if (!rawDate) return "";
-//   if (typeof rawDate === "string") return rawDate.slice(0, 10);
-//   const d = new Date(rawDate);
-//   if (isNaN(d.getTime())) return String(rawDate).slice(0, 10);
-//   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
-// }
 
 const formatDatabaseTime = (value) => {
   if (!value) return "—";

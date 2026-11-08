@@ -219,6 +219,16 @@ export default function AdminAppointmentPage() {
         return appointments.map((appt) => {
             const appointmentDate = getCleanLocalDateString(appt.appointment_date);
 
+            let bookedAtDisplay = "";
+            if (appt.created_at) {
+                const bookedDate = formatDate(appt.created_at);
+                const timePart = appt.created_at.includes("T")
+                    ? appt.created_at.split("T")[1].splice(0, 5)
+                    : appt.created_at.split(" ")[1]?.splice(0, 5) || "";
+                const bookedTime = bookedDate && timePart ? formatTime(timePart) : "";
+                bookedAtDisplay = bookedDate ? `Booked: ${bookedDate}${bookedTime ? `at ${bookedTime}` : ""}` : "";
+            }
+
             return {
                 ...appt,
                 cleanDate: appointmentDate,
@@ -418,6 +428,12 @@ export default function AdminAppointmentPage() {
                                     <div className='min-w-0 leading-tight'>
                                         <p className='truncate font-semibold text-slate-900'>{appt.full_name}</p>
                                         <p className='truncate text-sm text-slate-500'>{appt.company} . {appt.purpose}</p>
+                                        {/* Booking timestamp indicator */}
+                                        {appt.displayBookedAt && (
+                                            <p className='text-[11px] text-slate-400 mt-0.5'>
+                                                Booked on {appt.displayBookedAt}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
 
