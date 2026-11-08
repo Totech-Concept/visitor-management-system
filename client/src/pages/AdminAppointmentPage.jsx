@@ -223,8 +223,8 @@ export default function AdminAppointmentPage() {
             if (appt.created_at) {
                 const bookedDate = formatDate(appt.created_at);
                 const timePart = appt.created_at.includes("T")
-                    ? appt.created_at.split("T")[1].splice(0, 5)
-                    : appt.created_at.split(" ")[1]?.splice(0, 5) || "";
+                    ? appt.created_at.split("T")[1].slice(0, 5)
+                    : appt.created_at.split(" ")[1]?.slice(0, 5) || "";
                 const bookedTime = bookedDate && timePart ? formatTime(timePart) : "";
                 bookedAtDisplay = bookedDate ? `Booked: ${bookedDate}${bookedTime ? `at ${bookedTime}` : ""}` : "";
             }
