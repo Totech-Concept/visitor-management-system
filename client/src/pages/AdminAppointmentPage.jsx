@@ -219,6 +219,7 @@ export default function AdminAppointmentPage() {
         return appointments.map((appt) => {
             const appointmentDate = getCleanLocalDateString(appt.appointment_date);
 
+            // Format the booking timestamp for display
             let bookedAtDisplay = "";
             if (appt.created_at) {
                 const bookedDate = formatDate(appt.created_at);
@@ -237,6 +238,7 @@ export default function AdminAppointmentPage() {
                 avatarBg: "bg-blue-600",
                 displayDate: formatDate(appointmentDate),
                 displayTime: formatTime(appt.appointment_time),
+                displayBookedAt: bookedAtDisplay,
                 displayStatus:
                     appt.status === "confirmed"
                         ? "Confirmed" : "Cancelled",
