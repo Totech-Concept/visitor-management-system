@@ -204,7 +204,7 @@ export default function AdminVisitorsPage() {
             company: visitor.company || "Individual",
             purpose: visitor.purpose,
             date: visitDate,
-            rawDate: date,
+            rawDate: visitDate,
             host: visitor.host,
             status: visitor.status,
 
