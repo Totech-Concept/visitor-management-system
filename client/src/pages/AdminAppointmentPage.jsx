@@ -227,7 +227,7 @@ export default function AdminAppointmentPage() {
                     ? appt.created_at.split("T")[1].slice(0, 5)
                     : appt.created_at.split(" ")[1]?.slice(0, 5) || "";
                 const bookedTime = bookedDate && timePart ? formatTime(timePart) : "";
-                bookedAtDisplay = bookedDate ? `Booked: ${bookedDate}${bookedTime ? `at ${bookedTime}` : ""}` : "";
+                bookedAtDisplay = bookedDate ? `${bookedDate}${bookedTime ? ` at ${bookedTime}` : ""}` : "";
             }
 
             return {
