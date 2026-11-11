@@ -873,8 +873,8 @@ export default function AdminVisitorsPage() {
             >
               <option value="Scheduled">Scheduled</option>
               <option value="Checked In">Checked In</option>
-              <option value="Checked Out">Checked Out</option>
-              <option value="Cancelled">Cancelled</option>
+              {/* <option value="Checked Out">Checked Out</option>
+              <option value="Cancelled">Cancelled</option> */}
             </select>
           </div>
 
